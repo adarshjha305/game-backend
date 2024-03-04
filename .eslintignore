@@ -1,0 +1,4 @@
+.eslintrc.js
+src/config/*
+src/views
+
