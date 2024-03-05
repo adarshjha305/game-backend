@@ -20,7 +20,6 @@ export const createAdminValidation = Joi.object({
 });
 
 export const updateAdminValidation = Joi.object({
-  id: Joi.string().required(),
   fname: Joi.string().required().messages({
     "any.required": `Please provide the valid name.`,
     "string.base": "Please provide the valid name",
@@ -30,8 +29,6 @@ export const updateAdminValidation = Joi.object({
     "string.base": "Please provide the valid name",
   }),
   email: Joi.string().email().required(),
-  gender: Joi.string().valid("Male", "Female", "Others").optional(),
-  status: Joi.string().valid("ACTIVE", "BLOCKED").optional(),
   phone: Joi.string()
     .min(7)
     .max(12)

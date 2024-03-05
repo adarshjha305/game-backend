@@ -9,6 +9,7 @@ import { getJwt } from "../../helpers/Jwt.helper";
 import { CustomError } from "../../helpers/custome.error";
 import { responseGenerators } from "../../lib/utils";
 import AdminModel from "../../models/admin";
+import { createAdminValidation, loginAdminValidation, updateAdminValidation } from "../../helpers/validations/admin.user.validation";
 
 // Create Admin
 export const createAdminHandler = async (req, res) => {
@@ -67,6 +68,7 @@ export const createAdminHandler = async (req, res) => {
 // updated Admin
 export const updateAdminHandler = async (req, res) => {
   try {
+    await updateAdminValidation.validateAsync(req.body);
     const { fname, lname, email, phone } = req.body;
     const adminId = req.params.id;
 
@@ -170,6 +172,7 @@ export const deleteAdminHandler = async (req, res) => {
 // login AdminModel
 export const loginAdminHandler = async (req, res) => {
   try {
+    await loginAdminValidation.validateAsync(req.body);
     const { email, password } = req.body;
 
     const loginData = await AdminModel.findOne({
