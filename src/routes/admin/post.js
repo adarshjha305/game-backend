@@ -13,6 +13,7 @@ import AdminModel from "../../models/admin";
 // Create Admin
 export const createAdminHandler = async (req, res) => {
   try {
+    await createAdminValidation.validateAsync(req.body);
     const { fname, lname, email, phone, password } = req.body;
 
     const isAvailable = await AdminModel.findOne({
