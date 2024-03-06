@@ -147,3 +147,54 @@ export const otpVerificationHandler = async (req, res) => {
       );
   }
 };
+
+export const toggleBlockUnblockHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!id) throw new CustomError("Please provide a valid ID");
+
+    if (status == undefined) throw new CustomError("Invalid status provided");
+
+    const host = await HostModel.findById(id);
+    if (!host) {
+      throw new CustomError("Host not found");
+    }
+
+    const newStatus = status ? true : false;
+
+    // Toggle isBlocked field based on new status
+    const updatedHost = await HostModel.findByIdAndUpdate(
+      id,
+      { isBlocked: newStatus },
+      { new: true }
+    );
+    
+    return res
+    .status(StatusCodes.OK)
+    .send(responseGenerators({ host: updatedHost }, StatusCodes.OK, "SUCCESS", 0));
+
+
+  }  catch (error) {
+    if (error instanceof ValidationError || error instanceof CustomError) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .send(
+          responseGenerators({}, StatusCodes.BAD_REQUEST, error.message, 1)
+        );
+    }
+    console.log(JSON.stringify(error));
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .send(
+        responseGenerators(
+          {},
+          StatusCodes.INTERNAL_SERVER_ERROR,
+          "Internal Server Error",
+          1
+        )
+      );
+  }
+};
+
