@@ -1,6 +1,10 @@
 import { Router } from "express";
 import { privateKeyMiddleware } from "../../middleware/privateKeyCheck";
-import { createHostHandler, otpVerificationHandler } from "./post";
+import {
+  createHostHandler,
+  loginHostHandler,
+  otpVerificationHandler,
+} from "./post";
 
 const hostRoute = Router();
 
@@ -10,4 +14,6 @@ hostRoute.post(
   privateKeyMiddleware,
   otpVerificationHandler
 );
+
+hostRoute.post(`/login`, privateKeyMiddleware, loginHostHandler);
 export default hostRoute;
