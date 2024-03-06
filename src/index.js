@@ -9,6 +9,7 @@ import { StatusCodes } from "http-status-codes";
 import logger from "./lib/logger";
 import { responseValidation } from "./lib/utils";
 import adminRoute from "./routes/admin";
+import hostRoute from "./routes/host";
 
 const app = express();
 const server = new http.Server(app);
@@ -73,6 +74,7 @@ const health = async (req, res) => {
 
 app.get("/", health);
 app.use("/api/admin", adminRoute);
+app.use("/api/host", hostRoute);
 
 app.use(express.json());
 

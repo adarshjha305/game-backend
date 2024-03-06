@@ -10,6 +10,7 @@ export const createHostValidation = Joi.object({
     "string.base": "Please provide the valid name",
   }),
   gender: Joi.string().valid("Male", "Female", "Others").optional(),
+  termsAndCondition: Joi.boolean().required(),
   email: Joi.string().email().required(),
   phone: Joi.string()
     .min(7)
