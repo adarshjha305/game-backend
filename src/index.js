@@ -72,7 +72,7 @@ const health = async (req, res) => {
 };
 
 app.get("/", health);
-app.get("/api/admin", adminRoute);
+app.use("/api/admin", adminRoute);
 
 app.use(express.json());
 

@@ -91,6 +91,10 @@ export const OTP = {
   RESEND_OTP_SUCCESS: `OTP has been regenerated.`,
 };
 
+export const HOST = {
+  ONBOARD_MESSAGE: `OTP verified successfully, Please check the email for more information.`,
+};
+
 export const CHANGEPASSWORD = {
   USER_NOT_FOUND: `User Not found.`,
   PASSWORD_MISMATCH: `Invalid Current password.`,
@@ -188,5 +192,5 @@ export const NOTIFICATION_MESSAGE = {
 export const NOTIFICATION_TITLE = {
   chargerOffline: "Charger offline",
   transactionStarted: "Transaction started notification",
-  transactionStopped: "Transaction stopped notification"
+  transactionStopped: "Transaction stopped notification",
 };
