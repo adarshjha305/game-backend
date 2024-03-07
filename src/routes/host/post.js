@@ -211,6 +211,36 @@ export const loginHostHandler = async (req, res) => {
         )
       );
   } catch (error) {
+=======
+export const toggleBlockUnblockHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!id) throw new CustomError("Please provide a valid ID");
+
+    if (status == undefined) throw new CustomError("Invalid status provided");
+
+    const host = await HostModel.findById(id);
+    if (!host) {
+      throw new CustomError("Host not found");
+    }
+
+    const newStatus = status ? true : false;
+
+    // Toggle isBlocked field based on new status
+    const updatedHost = await HostModel.findByIdAndUpdate(
+      id,
+      { isBlocked: newStatus },
+      { new: true }
+    );
+    
+    return res
+    .status(StatusCodes.OK)
+    .send(responseGenerators({ host: updatedHost }, StatusCodes.OK, "SUCCESS", 0));
+
+
+  }  catch (error) {
     if (error instanceof ValidationError || error instanceof CustomError) {
       return res
         .status(StatusCodes.BAD_REQUEST)
@@ -231,3 +261,4 @@ export const loginHostHandler = async (req, res) => {
       );
   }
 };
+
