@@ -211,7 +211,7 @@ export const loginHostHandler = async (req, res) => {
         )
       );
   } catch (error) {
-     if (error instanceof ValidationError || error instanceof CustomError) {
+    if (error instanceof ValidationError || error instanceof CustomError) {
       return res
         .status(StatusCodes.BAD_REQUEST)
         .send(
@@ -231,7 +231,7 @@ export const loginHostHandler = async (req, res) => {
       );
   }
 };
-  }
+
 export const toggleBlockUnblockHandler = async (req, res) => {
   try {
     const { id } = req.params;
@@ -254,13 +254,13 @@ export const toggleBlockUnblockHandler = async (req, res) => {
       { isBlocked: newStatus },
       { new: true }
     );
-    
+
     return res
-    .status(StatusCodes.OK)
-    .send(responseGenerators({ host: updatedHost }, StatusCodes.OK, "SUCCESS", 0));
-
-
-  }  catch (error) {
+      .status(StatusCodes.OK)
+      .send(
+        responseGenerators({ host: updatedHost }, StatusCodes.OK, "SUCCESS", 0)
+      );
+  } catch (error) {
     if (error instanceof ValidationError || error instanceof CustomError) {
       return res
         .status(StatusCodes.BAD_REQUEST)
@@ -281,4 +281,3 @@ export const toggleBlockUnblockHandler = async (req, res) => {
       );
   }
 };
-
