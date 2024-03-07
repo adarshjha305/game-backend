@@ -25,3 +25,8 @@ export const otpVerificationValidation = Joi.object({
   otp: Joi.string().required(),
   id: Joi.string().required(),
 });
+
+export const loginVerificationValidation = Joi.object({
+  email: Joi.string().email().required(),
+  password: Joi.string().required(),
+});

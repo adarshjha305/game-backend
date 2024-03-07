@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import { sign, verify } from "jsonwebtoken";
-import config from '../../config'
+import config from "../../config";
 
 dotenv.config();
 
@@ -21,15 +21,14 @@ export function getJwt(data) {
 
 export function getShortJwt(data) {
   // eslint-disable-next-line no-undef
-  return sign(data, 'asaefasacsae', {
-    expiresIn: '1h'
+  return sign(data, "asaefasacsae", {
+    expiresIn: "1h",
   });
 }
 
-
 export async function verifyShortJwt(authorization) {
   // eslint-disable-next-line no-undef
-  const token = await verify(authorization, 'asaefasacsae');
+  const token = await verify(authorization, "asaefasacsae");
   return token;
 }
 
