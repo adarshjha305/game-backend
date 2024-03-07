@@ -1,7 +1,15 @@
 import { Router } from "express";
 import { privateKeyMiddleware } from "../../middleware/privateKeyCheck";
+
+import {
+  createHostHandler,
+  loginHostHandler,
+  otpVerificationHandler,
+  toggleBlockUnblockHandler
+} from "./post";
+
 import { listHostHandler } from "./get";
-import { createHostHandler, otpVerificationHandler, toggleBlockUnblockHandler } from "./post";
+
 
 const hostRoute = Router();
 
@@ -12,6 +20,9 @@ hostRoute.post(
   privateKeyMiddleware,
   otpVerificationHandler
 );
+
+
+hostRoute.post(`/login`, privateKeyMiddleware, loginHostHandler);
 
 hostRoute.get(`/list`, privateKeyMiddleware, listHostHandler);
 
