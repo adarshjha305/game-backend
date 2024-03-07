@@ -12,6 +12,7 @@ import {
   generateSecret,
   generateTOTP,
   getCurrentUnix,
+  hashPassword,
   verifyTotp,
 } from "../../commons/common-functions";
 import { getJwt } from "../../helpers/Jwt.helper";
@@ -35,6 +36,7 @@ export const createHostHandler = async (req, res) => {
     // create host
     let newHost = await HostModel.create({
       ...req.body,
+      password: await hashPassword(req.body.password),
       created_at: getCurrentUnix(),
       updated_at: getCurrentUnix(),
     });
@@ -198,3 +200,74 @@ export const toggleBlockUnblockHandler = async (req, res) => {
   }
 };
 
+
+/*// create host
+export const createHostHandler = async (req, res) => {
+  try {
+    // validation
+    await createHostValidation.validateAsync(req.body);
+
+    // check if the user exists with the given email or phone number
+    let existingHost = await HostModel.findOne({
+      $or: [{ email: req.body.email }, { phone: req.body.phone }],
+      isDeleted: false,
+    });
+
+    if (existingHost) {
+      if (!existingHost.isVerified) {
+        // Delete the existing host if not verified
+        await HostModel.findByIdAndDelete(existingHost._id);
+        console.log(`Deleted existing host with _id: ${existingHost._id}`);
+      } else {
+        throw new CustomError("Host already exists and is verified");
+      }
+    }
+
+    // create host
+    let newHost = await HostModel.create({
+      ...req.body,
+      password: await hashPassword(req.body.password),
+      created_at: getCurrentUnix(),
+      updated_at: getCurrentUnix(),
+    });
+
+    // generate otp
+    const secret = generateSecret();
+    const purpose = "SIGNUP";
+    const { code, newOtpSecret } = generateTOTP(secret, purpose);
+    newHost.otpSecret.push(newOtpSecret);
+    await newHost.save();
+    console.log(`SIGNUP  EMAIL:- ` + req.body.email + ` OTP :- ` + code);
+
+    return res
+      .status(StatusCodes.OK)
+      .send(
+        responseGenerators(
+          { _id: newHost._id, loginCompleted: false },
+          StatusCodes.OK,
+          "OTP Send Successfully",
+          0
+        )
+      );
+  } catch (error) {
+    if (error instanceof ValidationError || error instanceof CustomError) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .send(
+          responseGenerators({}, StatusCodes.BAD_REQUEST, error.message, 1)
+        );
+    }
+    console.log(JSON.stringify(error));
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .send(
+        responseGenerators(
+          {},
+          StatusCodes.INTERNAL_SERVER_ERROR,
+          "Internal Server Error",
+          1
+        )
+      );
+  }
+};
+*/
