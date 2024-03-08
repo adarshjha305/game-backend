@@ -3,6 +3,7 @@ import { generatePublicId } from "../commons/common-functions";
 
 const VenueSchema = new mongoose.Schema({
   _id: { type: String, required: true, trim: true, default: generatePublicId },
+  locationId: { type: String, required: true, trim: true },
   hostId: { type: String, required: true },
   details: { type: String, required: true },
   created_by: { type: String },
