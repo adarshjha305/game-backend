@@ -3,12 +3,35 @@ import { ValidationError } from "joi";
 import { CustomError } from "../../helpers/custome.error";
 import AdminModel from "../../models/admin";
 import { responseGenerators } from "../../lib/utils";
+import { setPagination } from "../../commons/common-functions";
 
 export const listAdminHandler = async (req, res) => {
   try {
-    const where = { isDeleted: false };
 
-    const admins = await AdminModel.find(where);
+    let where = { isDeleted: false };
+
+    if (req.query?.search) {
+      where = {
+        ...where,
+        ...{
+          $or: [
+            { fname: new RegExp(req.query.search.toString(), "i") },
+            { lname: new RegExp(req.query.search.toString(), "i") },
+            { phoneNumber: new RegExp(req.query.search.toString(), "i") },
+            { email: new RegExp(req.query.search.toString(), "i") },
+          ],
+        },
+      };
+    }
+    const pagination = setPagination(req.query);
+
+    const admins = await AdminModel.find(where)
+      .select("-password")
+      .sort(pagination.sort)
+      .skip(pagination.offset)
+      .limit(pagination.limit)
+      .lean()
+      .exec();
 
     return res.status(StatusCodes.OK).send(
       responseGenerators(admins, StatusCodes.OK, "SUCCESS", 0)

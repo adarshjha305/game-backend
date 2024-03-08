@@ -6,6 +6,7 @@ const TournamentSchema = new mongoose.Schema({
   hostId: { type: String, required: true, trim: true },
   locationId: { type: String, required: true, trim: true },
   gameId: { type: String, required: true, trim: true },
+  status:{ type: String, required: true, enum: ["DRAFT", "ACTIVE", "IN-PROGRESS", "CANCELLED"], default: "DRAFT" },
   numOfSets: { type: Number, required: true, trim: true, default: 3 },
   maxPoints: { type: Number, required: true, trim: true, default: 21 },
   venueId: {
