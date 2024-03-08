@@ -3,15 +3,48 @@ import { ValidationError } from "joi";
 import { CustomError } from "../../helpers/custome.error";
 import AdminModel from "../../models/admin";
 import { responseGenerators } from "../../lib/utils";
+import { setPagination } from "../../commons/common-functions";
 
 export const listAdminHandler = async (req, res) => {
   try {
-    const where = { isDeleted: false };
+    let where = { isDeleted: false };
 
-    const admins = await AdminModel.find(where);
+    if (req.query?.search) {
+      where = {
+        ...where,
+        ...{
+          $or: [
+            { fname: new RegExp(req.query.search.toString(), "i") },
+            { lname: new RegExp(req.query.search.toString(), "i") },
+            { phoneNumber: new RegExp(req.query.search.toString(), "i") },
+            { email: new RegExp(req.query.search.toString(), "i") },
+          ],
+        },
+      };
+    }
+    const pagination = setPagination(req.query);
+
+    const admins = await AdminModel.find(where)
+      .select("-password")
+      .sort(pagination.sort)
+      .skip(pagination.offset)
+      .limit(pagination.limit)
+      .lean()
+      .exec();
+
+    const total_count = await AdminModel.countDocuments(where);
 
     return res.status(StatusCodes.OK).send(
-      responseGenerators(admins, StatusCodes.OK, "SUCCESS", 0)
+      responseGenerators(
+        {
+          paginatedData: admins,
+          totalCount: total_count,
+          itemsPerPage: pagination.limit,
+        },
+        StatusCodes.OK,
+        "SUCCESS",
+        0
+      )
     );
   } catch (error) {
     if (error instanceof ValidationError || error instanceof CustomError) {
@@ -46,9 +79,9 @@ export const infoAdminHandler = async (req, res) => {
 
     if (!admin) throw new CustomError(`Admin doesn't exist`);
 
-    return res.status(StatusCodes.OK).send(
-      responseGenerators(admin, StatusCodes.OK, "SUCCESS", 0)
-    );
+    return res
+      .status(StatusCodes.OK)
+      .send(responseGenerators(admin, StatusCodes.OK, "SUCCESS", 0));
   } catch (error) {
     if (error instanceof ValidationError || error instanceof CustomError) {
       return res

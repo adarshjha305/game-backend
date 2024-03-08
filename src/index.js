@@ -10,6 +10,7 @@ import logger from "./lib/logger";
 import { responseValidation } from "./lib/utils";
 import adminRoute from "./routes/admin";
 import hostRoute from "./routes/host";
+import tournamentRouter from "./routes/tournament";
 
 const app = express();
 const server = new http.Server(app);
@@ -75,6 +76,7 @@ const health = async (req, res) => {
 app.get("/", health);
 app.use("/api/admin", adminRoute);
 app.use("/api/host", hostRoute);
+app.use("/api/tournament", tournamentRouter);
 
 app.use(express.json());
 
