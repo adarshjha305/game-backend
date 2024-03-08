@@ -31,8 +31,16 @@ export const createHostHandler = async (req, res) => {
       isDeleted: false,
     });
 
-    if (isAvailable)
-      throw new CustomError(`Host Already exists with either email or phone`);
+    if (isAvailable) {
+      // check is user verified if yes then host already exists.
+      if (isAvailable.isVerified)
+        throw new CustomError(`Host Already exists with either email or phone`);
+
+      // not verified then delete.
+      await HostModel.deleteOne({
+        _id: isAvailable._id,
+      });
+    }
 
     // create host
     let newHost = await HostModel.create({
