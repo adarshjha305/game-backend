@@ -206,7 +206,7 @@ export const loginHostHandler = async (req, res) => {
     loginData.save();
 
     // generate the jwt Token
-    const jswToken = await getJwt({ loginData });
+    const jswToken = await getJwt({ id: loginData._id, role: "HOST" });
 
     return res
       .status(StatusCodes.OK)
