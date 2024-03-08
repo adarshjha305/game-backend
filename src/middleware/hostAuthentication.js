@@ -31,7 +31,7 @@ export const authenticateHost = async (req, res, next) => {
         );
     }
     // Verify JWT token
-    const tokenData = await verifyJwt(jwtToken);
+    let tokenData = await verifyJwt(jwtToken);
 
     let host = await HostModel.findOne({
       _id: tokenData.id,

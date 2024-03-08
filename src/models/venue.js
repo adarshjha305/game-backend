@@ -13,6 +13,6 @@ const VenueSchema = new mongoose.Schema({
   isDeleted: { type: Boolean, default: false },
 });
 
-const LocationModel = mongoose.model("venue", VenueSchema);
+const VenueModel = mongoose.model("venue", VenueSchema);
 
-export default LocationModel;
+export default VenueModel;
