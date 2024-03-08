@@ -9,7 +9,7 @@ import { HOST, OTP } from "../../commons/global-constants";
 
 
 
-
+// Create Player API
 export const createPlayerHandler = async (req, res) => {
   try {
 
@@ -73,6 +73,7 @@ export const createPlayerHandler = async (req, res) => {
   }
 };
 
+//OTP-Verification API
 export const otpVerificationHandler = async (req, res) => {
     try {
       // validation
@@ -142,7 +143,7 @@ export const otpVerificationHandler = async (req, res) => {
     }
   };
 
-
+//Update Player API
   export const updatePlayerHandler = async (req, res) => {
     try {
       await updatePlayerValidation.validateAsync(req.body);
@@ -172,6 +173,58 @@ export const otpVerificationHandler = async (req, res) => {
         .send(
           responseGenerators({ ...player.toJSON() }, StatusCodes.OK, "SUCCESS", 0)
         );
+    } catch (error) {
+      if (error instanceof ValidationError || error instanceof CustomError) {
+        return res
+          .status(StatusCodes.BAD_REQUEST)
+          .send(
+            responseGenerators({}, StatusCodes.BAD_REQUEST, error.message, 1)
+          );
+      }
+      console.log(JSON.stringify(error));
+      return res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .send(
+          responseGenerators(
+            {},
+            StatusCodes.INTERNAL_SERVER_ERROR,
+            "Internal Server Error",
+            1
+          )
+        );
+    }
+  };
+
+// Block-Unblock Player API
+  export const toggleBlockUnblockHandler = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+  
+      if (!id) throw new CustomError("Please provide a valid ID");
+  
+      if (status == undefined) throw new CustomError("Invalid status provided");
+  
+      const customer = await PlayerModel.findById(id);
+      if (!customer) {
+        throw new CustomError("Player not found");
+      }
+  
+      const newStatus = status ? true : false;
+  
+      // Toggle isBlocked field based on new status
+      const updatedPlayer = await PlayerModel.findByIdAndUpdate(
+        id,
+        { isBlocked: newStatus },
+        { new: true }
+      );
+  
+      res.status(StatusCodes.OK).json({
+        message: `Customer ${
+          updatedPlayer.isBlocked ? "blocked" : "unblocked"
+        } successfully`,
+        customer: updatedPlayer,
+      });
     } catch (error) {
       if (error instanceof ValidationError || error instanceof CustomError) {
         return res

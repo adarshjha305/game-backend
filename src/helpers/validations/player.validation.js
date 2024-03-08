@@ -32,20 +32,20 @@ export const createPlayerValidation  = Joi.object({
 
   export const updatePlayerValidation = Joi.object({
     fname: Joi.string().optional().messages({
-        "any.required": `Please provide the valid name.`,
-        "string.base": "Please provide the valid name",
-      }),
-      lname: Joi.string().optional().messages({
-        "any.required": "Please provide the valid name",
-        "string.base": "Please provide the valid name",
-      }),
-      gender: Joi.string().valid("Male", "Female", "Others").optional(),
-      email: Joi.string().email().optional(),
-      phone: Joi.string()
-        .min(7)
-        .max(12)
-        .pattern(/^[0-9]+$/)
-        .optional(),
-      address: Joi.object().optional(),
+      "any.required": `Please provide the valid name.`,
+      "string.base": "Please provide the valid name",
+    }),
+    lname: Joi.string().optional().messages({
+      "any.required": "Please provide the valid name",
+      "string.base": "Please provide the valid name",
+    }),
+    gender: Joi.string().valid("Male", "Female", "Others").optional(),
+    email: Joi.string().email().optional(),
+    phone: Joi.string()
+      .min(7)
+      .max(12)
+      .pattern(/^[0-9]+$/)
+      .optional(),
+    address: Joi.object().optional(),
   });
 

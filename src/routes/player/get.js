@@ -5,6 +5,8 @@ import { responseGenerators } from "../../lib/utils";
 import { setPagination } from "../../commons/common-functions";
 import PlayerModel from "../../models/player";
 
+
+// LIST PLAYER API
 export const listPlayerHandler = async (req, res) => {
   try {
     let where = { isDeleted: false };
@@ -66,7 +68,7 @@ export const listPlayerHandler = async (req, res) => {
   }
 };
 
-
+//DELETE PLAYER API
 export const deletePlayer = async (req, res) => {
     try {
       const { id: _id } = req.params;
