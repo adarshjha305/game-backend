@@ -6,7 +6,12 @@ const TournamentSchema = new mongoose.Schema({
   hostId: { type: String, required: true, trim: true },
   locationId: { type: String, required: true, trim: true },
   gameId: { type: String, required: true, trim: true },
-  status:{ type: String, required: true, enum: ["DRAFT", "ACTIVE", "IN-PROGRESS", "CANCELLED"], default: "DRAFT" },
+  status: {
+    type: String,
+    required: true,
+    enum: ["DRAFT", "ACTIVE", "IN-PROGRESS", "CANCELLED"],
+    default: "DRAFT",
+  },
   numOfSets: { type: Number, required: true, trim: true, default: 3 },
   maxPoints: { type: Number, required: true, trim: true, default: 21 },
   venueId: {
@@ -34,7 +39,13 @@ const TournamentSchema = new mongoose.Schema({
   contactPerson: { type: String, required: true },
   contactPhone: { type: String },
   contactEmail: { type: String },
-
+  paymentStatus: {
+    type: String,
+    required: true,
+    enum: ["PENDING", "COMPETED", "FAILED", "REFUNDED"],
+    default: "PENDING",
+  },
+  paymentAmount: { type: Number },
   created_by: { type: String },
   updated_by: { type: String },
   created_at: { type: String },

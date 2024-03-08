@@ -7,7 +7,6 @@ import { setPagination } from "../../commons/common-functions";
 
 export const listAdminHandler = async (req, res) => {
   try {
-
     let where = { isDeleted: false };
 
     if (req.query?.search) {
@@ -33,8 +32,19 @@ export const listAdminHandler = async (req, res) => {
       .lean()
       .exec();
 
+    const total_count = await AdminModel.countDocuments(where);
+
     return res.status(StatusCodes.OK).send(
-      responseGenerators(admins, StatusCodes.OK, "SUCCESS", 0)
+      responseGenerators(
+        {
+          paginatedData: admins,
+          totalCount: total_count,
+          itemsPerPage: pagination.limit,
+        },
+        StatusCodes.OK,
+        "SUCCESS",
+        0
+      )
     );
   } catch (error) {
     if (error instanceof ValidationError || error instanceof CustomError) {
@@ -69,9 +79,9 @@ export const infoAdminHandler = async (req, res) => {
 
     if (!admin) throw new CustomError(`Admin doesn't exist`);
 
-    return res.status(StatusCodes.OK).send(
-      responseGenerators(admin, StatusCodes.OK, "SUCCESS", 0)
-    );
+    return res
+      .status(StatusCodes.OK)
+      .send(responseGenerators(admin, StatusCodes.OK, "SUCCESS", 0));
   } catch (error) {
     if (error instanceof ValidationError || error instanceof CustomError) {
       return res

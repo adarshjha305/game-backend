@@ -6,62 +6,69 @@ import { responseGenerators } from "../../lib/utils";
 import { tournamentValidation } from "../../helpers/validations/tournament.validation";
 import { dateToUnix } from "../../commons/common-functions";
 
-
-
+// create tournament.
 export const createTournamentHandler = async (req, res) => {
-    try {   
-    await  tournamentValidation.validateAsync(req.body);
-      const existingTournament = await TournamentModel.findOne({ name: req.body.name });
+  try {
+    await tournamentValidation.validateAsync(req.body);
+    const existingTournament = await TournamentModel.findOne({
+      name: req.body.name,
+      isDeleted: false,
+    });
 
-      if (existingTournament) {
-        throw new CustomError(`Tournament with name '${req.body.name}' already exists`);
-      }
-  
-      const newTournament = await TournamentModel.create({
-        hostId: req.body.hostId,
-        locationId: req.body.locationId,
-        gameId: req.body.gameId,
-        numOfSets: req.body.numOfSets || 3,
-        maxPoints: req.body.maxPoints || 21,
-        venueId: req.body.venueId || [],
-        name: req.body.name,
-        description: req.body.description,
-        gameType: req.body.gameType,
-        type: req.body.type,
-        startDateAndTime: dateToUnix(req.body.startDateAndTime),
-        endDateAndTime: dateToUnix(req.body.endDateAndTime),
-        maxParticipants: req.body.maxParticipants,
-        minParticipants: req.body.minParticipants,
-        registrationEndDateTime: dateToUnix(req.body.registrationEndDateTime),
-        gender: req.body.gender,
-        banner: req.body.banner,
-        minAge: req.body.minAge,
-        maxAge: req.body.maxAge,
-        tournamentFee: req.body.tournamentFee,
-        contactPerson: req.body.contactPerson,
-        contactPhone: req.body.contactPhone,
-        contactEmail: req.body.contactEmail,
-      });
-  
-      return res
+    if (existingTournament) {
+      throw new CustomError(
+        `Tournament with name '${req.body.name}' already exists`
+      );
+    }
+
+    const newTournament = await TournamentModel.create({
+      hostId: req.body.hostId,
+      locationId: req.body.locationId,
+      gameId: req.body.gameId,
+      numOfSets: req.body.numOfSets || 3,
+      maxPoints: req.body.maxPoints || 21,
+      venueId: req.body.venueId || [],
+      name: req.body.name,
+      description: req.body.description,
+      gameType: req.body.gameType,
+      type: req.body.type,
+      startDateAndTime: dateToUnix(req.body.startDateAndTime),
+      endDateAndTime: dateToUnix(req.body.endDateAndTime),
+      maxParticipants: req.body.maxParticipants,
+      minParticipants: req.body.minParticipants,
+      registrationEndDateTime: dateToUnix(req.body.registrationEndDateTime),
+      gender: req.body.gender,
+      banner: req.body.banner,
+      minAge: req.body.minAge,
+      maxAge: req.body.maxAge,
+      tournamentFee: req.body.tournamentFee,
+      contactPerson: req.body.contactPerson,
+      contactPhone: req.body.contactPhone,
+      contactEmail: req.body.contactEmail,
+    });
+
+    return res
       .status(StatusCodes.OK)
       .send(
-        responseGenerators({ _id: newTournament._id}, StatusCodes.OK, "SUCCESS", 0)
+        responseGenerators(
+          { _id: newTournament._id },
+          StatusCodes.OK,
+          "SUCCESS",
+          0
+        )
       );
-    }catch (error) {
-      if (error instanceof ValidationError || error instanceof CustomError) {
-        return res.status(StatusCodes.BAD_REQUEST).json({
-          message: error.message,
-        });
-      }
-      console.error(error);
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        message: 'Internal Server Error',
+  } catch (error) {
+    if (error instanceof ValidationError || error instanceof CustomError) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: error.message,
       });
     }
-  };
-
-
+    console.error(error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: "Internal Server Error",
+    });
+  }
+};
 
 // export const addTournament = async (req, res) => {
 //     try {

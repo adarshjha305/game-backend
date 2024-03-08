@@ -5,8 +5,6 @@ import { responseGenerators } from "../../lib/utils";
 import HostModel from "../../models/host";
 import { setPagination } from "../../commons/common-functions";
 
-
-
 export const listHostHandler = async (req, res) => {
   try {
     let where = { isDeleted: false };
@@ -34,9 +32,20 @@ export const listHostHandler = async (req, res) => {
       .lean()
       .exec();
 
-    return res
-      .status(StatusCodes.OK)
-      .send(responseGenerators(hosts, StatusCodes.OK, "SUCCESS", 0));
+    let total_count = await HostModel.countDocuments(where);
+
+    return res.status(StatusCodes.OK).send(
+      responseGenerators(
+        {
+          paginatedData: hosts,
+          totalCount: total_count,
+          itemsPerPage: pagination.limit,
+        },
+        StatusCodes.OK,
+        "SUCCESS",
+        0
+      )
+    );
   } catch (error) {
     if (error instanceof ValidationError || error instanceof CustomError) {
       return res
