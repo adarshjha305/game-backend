@@ -5,7 +5,7 @@ const GameSchema = new mongoose.Schema({
   _id: { type: String, required: true, trim: true, default: generatePublicId },
   name: { type: String, required: true },
   description: { type: String },
-  isActive: { type: Boolean, required: true },
+  isActive: { type: Boolean, required: true, default: true },
   created_by: { type: String },
   updated_by: { type: String },
   created_at: { type: String },
@@ -13,6 +13,6 @@ const GameSchema = new mongoose.Schema({
   isDeleted: { type: Boolean, default: false },
 });
 
-const HostModel = mongoose.model("game", GameSchema);
+const GameModel = mongoose.model("game", GameSchema);
 
-export default HostModel;
+export default GameModel;
