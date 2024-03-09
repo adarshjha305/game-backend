@@ -12,6 +12,9 @@ import adminRoute from "./routes/admin";
 import hostRoute from "./routes/host";
 import tournamentRouter from "./routes/tournament";
 import playerRouter from "./routes/player";
+import locationRouter from "./routes/location";
+import venueRouter from "./routes/venue";
+
 
 const app = express();
 const server = new http.Server(app);
@@ -79,6 +82,9 @@ app.use("/api/admin", adminRoute);
 app.use("/api/host", hostRoute);
 app.use("/api/tournament", tournamentRouter);
 app.use("/api/player", playerRouter);
+app.use("/api/location", locationRouter);
+app.use("/api/venue", venueRouter);
+
 
 app.use(express.json());
 

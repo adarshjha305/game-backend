@@ -10,6 +10,7 @@ import {
 import HostModel from "../../models/host";
 import {
   comparePassword,
+  encryptData,
   generateSecret,
   generateTOTP,
   getCurrentUnix,
@@ -208,16 +209,18 @@ export const loginHostHandler = async (req, res) => {
     // generate the jwt Token
     const jswToken = await getJwt({ id: loginData._id, role: "HOST" });
 
-    return res
-      .status(StatusCodes.OK)
-      .send(
-        responseGenerators(
-          { token: jswToken, userData: loginData, loginCompleted: true },
-          StatusCodes.OK,
-          "SUCCESS",
-          0
-        )
-      );
+    return res.status(StatusCodes.OK).send(
+      responseGenerators(
+        {
+          token: encryptData(jswToken),
+          userData: loginData,
+          loginCompleted: true,
+        },
+        StatusCodes.OK,
+        "SUCCESS",
+        0
+      )
+    );
   } catch (error) {
     if (error instanceof ValidationError || error instanceof CustomError) {
       return res
