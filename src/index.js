@@ -13,6 +13,9 @@ import hostRoute from "./routes/host";
 import tournamentRouter from "./routes/tournament";
 import locationRouter from "./routes/location";
 import venueRouter from "./routes/venue";
+// import { generateTheMatchSchedule } from "./scripts";
+
+// Math.pow(2, Math.floor(Math.log(players) / Math.log(2)))
 
 const app = express();
 const server = new http.Server(app);
