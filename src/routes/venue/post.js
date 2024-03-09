@@ -9,13 +9,13 @@ import {
 } from "../../helpers/validations/venue.validation";
 import VenueModel from "../../models/venue";
 
-// create location
+// create Venue
 export const createVenueHandler = async (req, res) => {
   try {
     // check Validation
     await createVenueValidation.validateAsync(req.body);
 
-    // Create a new location
+    // Create a new Venue
     let newVenue = await VenueModel.create({
       ...req.body,
       created_by: req.body.hostId,
@@ -40,7 +40,7 @@ export const createVenueHandler = async (req, res) => {
   }
 };
 
-// update location
+// update Venue
 export const updateVenueHandler = async (req, res) => {
   try {
     // check Validation
@@ -49,7 +49,7 @@ export const updateVenueHandler = async (req, res) => {
       ...req.params,
     });
 
-    // find and update location
+    // find and update Venue
     let updatedData = await VenueModel.findOneAndUpdate(
       { _id: req.params.id, isDeleted: false },
       {
@@ -60,7 +60,7 @@ export const updateVenueHandler = async (req, res) => {
       { new: true }
     );
 
-    // if the location is not exist
+    // if the Venue  is not exist
     if (!updatedData) throw new CustomError(`Location does not exist`);
 
     return res

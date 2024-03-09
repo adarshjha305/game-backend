@@ -5,7 +5,7 @@ import { ValidationError } from "webpack";
 import { CustomError } from "../../helpers/custome.error";
 import VenueModel from "../../models/venue";
 
-// list location
+// list Venue
 export const listVenueHandler = async (req, res) => {
   try {
     let where = { isDeleted: false };
@@ -62,13 +62,13 @@ export const listVenueHandler = async (req, res) => {
   }
 };
 
-// delete location
+// delete Venue
 export const deleteVenueHandler = async (req, res) => {
   try {
     // check Validation
     if (!req.params.id) throw new CustomError(`Please provide valid id`);
 
-    // find and update location
+    // find and update Venue
     let updatedData = await VenueModel.findOneAndUpdate(
       { _id: req.params.id, isDeleted: false },
       { isDeleted: true, updatedAt: getCurrentUnix(), updatedBy: "" },
