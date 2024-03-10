@@ -10,7 +10,7 @@ const ParticipantSchema = new mongoose.Schema({
   paymentStatus: {
     type: String,
     required: true,
-    enum: ["PENDING", "FAILED", "FAILED"],
+    enum: ["PENDING", "FAILED", "COMPLETED"],
   },
   created_by: { type: String },
   updated_by: { type: String },
@@ -18,7 +18,7 @@ const ParticipantSchema = new mongoose.Schema({
   updated_at: { type: String },
   isDeleted: { type: Boolean, default: false },
 });
-
+ 
 const ParticipantModel = mongoose.model("participant", ParticipantSchema);
 
 export default ParticipantModel;

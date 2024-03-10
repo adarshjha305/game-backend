@@ -14,6 +14,7 @@ import tournamentRouter from "./routes/tournament";
 import playerRouter from "./routes/player";
 import locationRouter from "./routes/location";
 import venueRouter from "./routes/venue";
+import participantRouter from "./routes/participant";
 // import { generateTheMatchSchedule } from "./scripts";
 
 // Math.pow(2, Math.floor(Math.log(players) / Math.log(2)))
@@ -87,6 +88,8 @@ app.use("/api/tournament", tournamentRouter);
 app.use("/api/player", playerRouter);
 app.use("/api/location", locationRouter);
 app.use("/api/venue", venueRouter);
+app.use("/api/participant", participantRouter);
+
 
 
 app.use(express.json());
