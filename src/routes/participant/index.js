@@ -9,7 +9,7 @@ const participantRouter = Router();
 
 participantRouter.post(`/add`, privateKeyMiddleware, addParticipantHandler);
 
-participantRouter.get(`/list`, privateKeyMiddleware, listParticipantHandler);
+participantRouter.get(`/list/:id`, privateKeyMiddleware, listParticipantHandler);
 
 
 export default participantRouter;
