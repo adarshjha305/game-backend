@@ -1,4 +1,3 @@
-
 import { ValidationError } from "joi";
 import ParticipantModel from "../../models/participant";
 import { StatusCodes } from "http-status-codes";
@@ -16,7 +15,11 @@ export const listParticipantHandler = async (req, res) => {
       throw new CustomError("Tournament ID is required");
     }
 
-    const where = { tournamentId, isDeleted: false, paymentStatus: "COMPLETED" };
+    const where = {
+      tournamentId,
+      isDeleted: false,
+      paymentStatus: "COMPLETED",
+    };
 
     const pagination = setPagination(where);
 
@@ -61,5 +64,3 @@ export const listParticipantHandler = async (req, res) => {
       );
   }
 };
-
-
