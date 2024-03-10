@@ -194,3 +194,37 @@ export const getUnixStartTime = (unixData) => {
 export const delay = (ms) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
+
+export const shuffleArray = (array) => {
+  return array.slice().sort(() => Math.random() - 0.5);
+};
+
+export const createGroups = (array) => {
+  const totalLength = array.length;
+  const groupSize1 = 5;
+  const groupSize2 = 4;
+
+  let remainingLength = totalLength;
+  const result = [];
+
+  while (remainingLength > 0) {
+    if (remainingLength % groupSize1 === 0) {
+      result.push(array.splice(0, groupSize1));
+      remainingLength -= groupSize1;
+    } else if (remainingLength % groupSize2 === 0) {
+      result.push(array.splice(0, groupSize2));
+      remainingLength -= groupSize2;
+    } else {
+      // If neither group size evenly divides the remaining length, adjust the group size
+      if (remainingLength % groupSize1 > remainingLength % groupSize2) {
+        result.push(array.splice(0, groupSize1));
+        remainingLength -= groupSize1;
+      } else {
+        result.push(array.splice(0, groupSize2));
+        remainingLength -= groupSize2;
+      }
+    }
+  }
+
+  return result;
+};
