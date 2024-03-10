@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { string } from "joi";
 
-const ParticipantSchema = new mongoose.Schema({
+const matchSchema = new mongoose.Schema({
   _id: { type: String, required: true, trim: true },
   hostId: { type: String, required: true },
   tournamentId: { type: String, required: true },
@@ -17,7 +17,7 @@ const ParticipantSchema = new mongoose.Schema({
   score: {
     type: [
       {
-        playerId: { type: string },
+        teamId: { type: string },
         score: { type: Number, required: true, default: 0 },
       },
     ],
@@ -40,6 +40,6 @@ const ParticipantSchema = new mongoose.Schema({
   isDeleted: { type: Boolean, default: false },
 });
 
-const ParticipantModel = mongoose.model("participant", ParticipantSchema);
+const MatchModel = mongoose.model("participant", matchSchema);
 
-export default ParticipantModel;
+export default MatchModel;
