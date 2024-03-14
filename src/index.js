@@ -19,7 +19,6 @@ import participantRouter from "./routes/participant";
 
 // Math.pow(2, Math.floor(Math.log(players) / Math.log(2)))
 
-
 const app = express();
 const server = new http.Server(app);
 
@@ -89,7 +88,6 @@ app.use("/api/player", playerRouter);
 app.use("/api/location", locationRouter);
 app.use("/api/venue", venueRouter);
 app.use("/api/participant", participantRouter);
-
 
 
 app.use(express.json());
