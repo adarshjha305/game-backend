@@ -46,6 +46,8 @@ export const createHostHandler = async (req, res) => {
     // create host
     let newHost = await HostModel.create({
       ...req.body,
+      
+      password: await hashPassword(req.body.password),
       email: req.body.email.toLowerCase(),
       password: await hashPassword(req.body.password),
       created_by: req.body._id,

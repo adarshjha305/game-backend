@@ -31,7 +31,7 @@ export const listAdminHandler = async (req, res) => {
       .limit(pagination.limit)
       .lean()
       .exec();
-
+    
     const total_count = await AdminModel.countDocuments(where);
 
     return res.status(StatusCodes.OK).send(

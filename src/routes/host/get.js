@@ -24,6 +24,26 @@ export const listHostHandler = async (req, res) => {
     }
     const pagination = setPagination(req.query);
 
+
+export const listHostHandler = async (req, res) => {
+  try {
+    let where = { isDeleted: false };
+
+    if (req.query?.search) {
+      where = {
+        ...where,
+        ...{
+          $or: [
+            { fname: new RegExp(req.query.search.toString(), "i") },
+            { lname: new RegExp(req.query.search.toString(), "i") },
+            { phoneNumber: new RegExp(req.query.search.toString(), "i") },
+            { email: new RegExp(req.query.search.toString(), "i") },
+          ],
+        },
+      };
+    }
+    const pagination = setPagination(req.query);
+
     const hosts = await HostModel.find(where)
       .select("-password")
       .sort(pagination.sort)
@@ -32,20 +52,10 @@ export const listHostHandler = async (req, res) => {
       .lean()
       .exec();
 
-    let total_count = await HostModel.countDocuments(where);
+    return res
+      .status(StatusCodes.OK)
+      .send(responseGenerators(hosts, StatusCodes.OK, "SUCCESS", 0));
 
-    return res.status(StatusCodes.OK).send(
-      responseGenerators(
-        {
-          paginatedData: hosts,
-          totalCount: total_count,
-          itemsPerPage: pagination.limit,
-        },
-        StatusCodes.OK,
-        "SUCCESS",
-        0
-      )
-    );
   } catch (error) {
     if (error instanceof ValidationError || error instanceof CustomError) {
       return res
@@ -66,3 +76,4 @@ export const listHostHandler = async (req, res) => {
       );
   }
 };
+
