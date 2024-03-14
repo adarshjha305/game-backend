@@ -30,7 +30,7 @@ export const addParticipantHandler = async (req, res) => {
     // get current unix timestamp
     const currentUnix = getCurrentUnix();
 
-    if (checkIsDateAfter(registrationEndUnix, currentUnix)) {
+    if (!checkIsDateAfter(registrationEndUnix, currentUnix)) {
       throw new CustomError(`Tournament registration is closed`);
     }
 

@@ -2,6 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import { CustomError } from "../../helpers/custom.error";
 import { responseGenerators } from "../../lib/utils";
 import MatchModel from "../../models/match";
+import { ValidationError } from "joi";
 
 export const listMatchesHandler = async (req, res) => {
   try {

@@ -30,7 +30,7 @@ export const add10MinToUnxi = (currentUnix) => {
 
 
 export const checkIsDateAfter = (date1,date2 = dayjs().format("DD-MM-YY HH:mm").toString()) => {
-  return dayjs(date1, "DD-MM-YY HH:mm").isAfter(dayjs(date2, "DD-MM-YY HH:mm"));
+  return dayjs(+date1, "DD-MM-YY HH:mm").isAfter(dayjs(+date2, "DD-MM-YY HH:mm"));
 }
 
 export const getMonthStartData = () => {
