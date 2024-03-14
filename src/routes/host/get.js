@@ -5,6 +5,24 @@ import { responseGenerators } from "../../lib/utils";
 import HostModel from "../../models/host";
 import { setPagination } from "../../commons/common-functions";
 
+export const listHostHandler = async (req, res) => {
+  try {
+    let where = { isDeleted: false };
+
+    if (req.query?.search) {
+      where = {
+        ...where,
+        ...{
+          $or: [
+            { fname: new RegExp(req.query.search.toString(), "i") },
+            { lname: new RegExp(req.query.search.toString(), "i") },
+            { phoneNumber: new RegExp(req.query.search.toString(), "i") },
+            { email: new RegExp(req.query.search.toString(), "i") },
+          ],
+        },
+      };
+    }
+    const pagination = setPagination(req.query);
 
 
 export const listHostHandler = async (req, res) => {
@@ -37,6 +55,7 @@ export const listHostHandler = async (req, res) => {
     return res
       .status(StatusCodes.OK)
       .send(responseGenerators(hosts, StatusCodes.OK, "SUCCESS", 0));
+
   } catch (error) {
     if (error instanceof ValidationError || error instanceof CustomError) {
       return res
@@ -57,3 +76,4 @@ export const listHostHandler = async (req, res) => {
       );
   }
 };
+
