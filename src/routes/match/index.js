@@ -1,6 +1,7 @@
 import express from "express";
 import { authenticateHost } from "../../middleware/hostAuthentication";
-import { scoreUpdateMatchHandler, updateMatchHandler } from "./post";
+import { listMatchesHandler } from "./get";
+import { getLiveScoreHandler, scoreUpdateMatchHandler, updateMatchHandler } from "./post";
 
 const matchRouter = express.Router();
 
@@ -12,6 +13,18 @@ matchRouter.post(
   "/score-update/:id",
   authenticateHost,
   scoreUpdateMatchHandler
+);
+
+matchRouter.post(
+  "/live-score",
+  authenticateHost,
+  getLiveScoreHandler
+);
+
+matchRouter.get(
+  "/list/:id",
+  authenticateHost,
+  listMatchesHandler
 );
 
 export default matchRouter;
