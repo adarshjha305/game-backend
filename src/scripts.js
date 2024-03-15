@@ -1,4 +1,7 @@
-import { shuffleArray } from "./commons/common-functions";
+import {
+  generateTheMatchScheduleForKnockOut,
+  shuffleArray,
+} from "./commons/common-functions";
 let playerCount = 21;
 
 export const generateTheMatchSchedule = (playerCount, playerArray) => {
@@ -22,9 +25,6 @@ export const generateTheMatchSchedule = (playerCount, playerArray) => {
     Math.floor(Math.log(playerCount) / Math.log(2))
   );
 
-  console.log("firsRoundBye :-", firsRoundBye);
-  console.log("preRoundCount :-", preRoundCount);
-
   firstByePlayers = playerArray.splice(0, firsRoundBye);
 
   // get no of rounds.
@@ -33,7 +33,6 @@ export const generateTheMatchSchedule = (playerCount, playerArray) => {
       ? 1 + Math.log(previousBracketSize) / Math.log(2)
       : 0 + Math.log(previousBracketSize) / Math.log(2);
 
-  console.log("rounds :-", rounds);
   let matchId = 1;
   for (let i = 0; i < rounds; i++) {
     if (i == 0) {
@@ -142,31 +141,11 @@ export const generateTheMatchSchedule = (playerCount, playerArray) => {
       fullMatches.push(currentRoundMatches);
     }
   }
-  console.log(fullMatches);
-};
 
-let playerArray = [
-  "player1",
-  "player2",
-  "player3",
-  "player4",
-  "player5",
-  "player6",
-  "player7",
-  "player8",
-  "player9",
-  "player10",
-  "player11",
-  "player12",
-  "player13",
-  "player14",
-  "player15",
-  "player16",
-  "player17",
-  "player18",
-  "player19",
-  "player20",
-  "player21",
-];
+  return {
+    rounds: rounds,
+    fullMatches: fullMatches,
+  };
+};
 
 // generateTheMatchSchedule(playerCount, playerArray);

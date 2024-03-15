@@ -1,10 +1,12 @@
 import mongoose from "mongoose";
 import { string } from "joi";
 
-const matchSchema = new mongoose.Schema({
+const badmintonMatchSchema = new mongoose.Schema({
   _id: { type: String, required: true, trim: true },
   hostId: { type: String, required: true },
   tournamentId: { type: String, required: true },
+  player1: { type: String, required: true },
+  player2: { type: String, required: true },
   gameId: { type: String, required: true },
   dependentOnMatchResult: { type: String },
   numOfSets: { type: Number, required: true, trim: true, default: 3 },
@@ -13,6 +15,7 @@ const matchSchema = new mongoose.Schema({
     type: String,
     required: true,
     enum: ["PENDING", "IN_PROGRESS", "COMPLETED"],
+    default: "PENDING",
   },
   score: {
     type: [
@@ -30,6 +33,7 @@ const matchSchema = new mongoose.Schema({
     required: true,
     enum: ["KNOCK_OUT", "ROUND_ROBIN"],
   },
+  round: { type: Number, required: true },
   winner: { type: String, required: true },
   startDateAndTime: { type: String, required: true },
   endDateAndTime: { type: String, required: true },
@@ -40,6 +44,6 @@ const matchSchema = new mongoose.Schema({
   isDeleted: { type: Boolean, default: false },
 });
 
-const MatchModel = mongoose.model("participant", matchSchema);
+const BadmintonMatchModel = mongoose.model("participant", badmintonMatchSchema);
 
-export default MatchModel;
+export default BadmintonMatchModel;

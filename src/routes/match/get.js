@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { CustomError } from "../../helpers/custom.error";
 import { responseGenerators } from "../../lib/utils";
-import MatchModel from "../../models/match";
+import BadmintonMatchModel from "../../models/match";
 import { ValidationError } from "joi";
 
 export const listMatchesHandler = async (req, res) => {
@@ -9,7 +9,7 @@ export const listMatchesHandler = async (req, res) => {
     const tournamentId = req.params.id;
 
     // Find all matches based on the tournamentId
-    const matches = await MatchModel.find({
+    const matches = await BadmintonMatchModel.find({
       tournamentId: tournamentId,
       isDeleted: false,
     });
@@ -24,14 +24,16 @@ export const listMatchesHandler = async (req, res) => {
       status: match.status,
     }));
 
-    return res.status(StatusCodes.OK).send(
-      responseGenerators(
-        responseData,
-        StatusCodes.OK,
-        "Matches fetched successfully",
-        0
-      )
-    );
+    return res
+      .status(StatusCodes.OK)
+      .send(
+        responseGenerators(
+          responseData,
+          StatusCodes.OK,
+          "Matches fetched successfully",
+          0
+        )
+      );
   } catch (error) {
     if (error instanceof ValidationError || error instanceof CustomError) {
       return res.status(StatusCodes.BAD_REQUEST).json({
@@ -45,14 +47,12 @@ export const listMatchesHandler = async (req, res) => {
   }
 };
 
-
-
 // export const getLiveScoreHandler = async (req, res) => {
 //   try {
 //     const { tournamentId, matchId } = req.params;
 
 //     // Find the match based on tournamentId and matchId
-//     const match = await MatchModel.findOne({
+//     const match = await BadmintonMatchModel.findOne({
 //       _id: matchId,
 //       tournamentId: tournamentId,
 //       isDeleted: false,

@@ -15,7 +15,37 @@ import playerRouter from "./routes/player";
 import locationRouter from "./routes/location";
 import venueRouter from "./routes/venue";
 import participantRouter from "./routes/participant";
-// import { generateTheMatchSchedule } from "./scripts";
+// import { generateTheMatchScheduleForKnockOut } from "./commons/common-functions";
+
+// let playerArray = [
+//   "player1",
+//   "player2",
+//   "player3",
+//   "player4",
+//   "player5",
+//   "player6",
+//   "player7",
+//   "player8",
+//   "player9",
+//   "player10",
+//   "player11",
+//   "player12",
+//   "player13",
+//   "player14",
+//   "player15",
+//   "player16",
+//   "player17",
+//   "player18",
+//   "player19",
+//   "player20",
+//   "player21",
+// ];
+
+// console.log(
+//   JSON.stringify(
+//     generateTheMatchScheduleForKnockOut(playerArray.length, playerArray)
+//   )
+// );
 
 // Math.pow(2, Math.floor(Math.log(players) / Math.log(2)))
 
@@ -88,7 +118,6 @@ app.use("/api/player", playerRouter);
 app.use("/api/location", locationRouter);
 app.use("/api/venue", venueRouter);
 app.use("/api/participant", participantRouter);
-
 
 app.use(express.json());
 

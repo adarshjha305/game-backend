@@ -7,7 +7,7 @@ import {
   scoreUpdateMatchValidation,
   updateMatchValidation,
 } from "../../helpers/validations/match.validation";
-import MatchModel from "../../models/match";
+import BadmintonMatchModel from "../../models/match";
 
 // update Match
 export const updateMatchHandler = async (req, res) => {
@@ -19,7 +19,7 @@ export const updateMatchHandler = async (req, res) => {
     });
 
     // find and update Match
-    let updatedData = await MatchModel.findOneAndUpdate(
+    let updatedData = await BadmintonMatchModel.findOneAndUpdate(
       { _id: req.params.id, isDeleted: false },
       {
         ...req.body,
@@ -55,7 +55,7 @@ export const scoreUpdateMatchHandler = async (req, res) => {
     await scoreUpdateMatchValidation.validateAsync(req.body);
 
     // find and update score
-    let updatedData = await MatchModel.findOneAndUpdate(
+    let updatedData = await BadmintonMatchModel.findOneAndUpdate(
       {
         _id: req.body.id,
         isDeleted: false,
@@ -90,7 +90,6 @@ export const scoreUpdateMatchHandler = async (req, res) => {
   }
 };
 
-
 export const getLiveScoreHandler = async (req, res) => {
   try {
     const { matchId, tournamentId } = req.body;
@@ -101,7 +100,7 @@ export const getLiveScoreHandler = async (req, res) => {
     }
 
     // Find the match based on tournamentId and matchId
-    const match = await MatchModel.findOne({
+    const match = await BadmintonMatchModel.findOne({
       _id: matchId,
       tournamentId: tournamentId,
       isDeleted: false,
@@ -116,7 +115,7 @@ export const getLiveScoreHandler = async (req, res) => {
     const playerInfo = match.score.map((score) => {
       return {
         playerId: score.teamId,
-        playerName: "Player Name", 
+        playerName: "Player Name",
         score: score.score,
       };
     });
@@ -132,14 +131,16 @@ export const getLiveScoreHandler = async (req, res) => {
     };
 
     // Send the response
-    return res.status(StatusCodes.OK).send(
-      responseGenerators(
-        responseData,
-        StatusCodes.OK,
-        "Live score fetched successfully",
-        0
-      )
-    );
+    return res
+      .status(StatusCodes.OK)
+      .send(
+        responseGenerators(
+          responseData,
+          StatusCodes.OK,
+          "Live score fetched successfully",
+          0
+        )
+      );
   } catch (error) {
     if (error instanceof ValidationError || error instanceof CustomError) {
       return res.status(StatusCodes.BAD_REQUEST).json({
@@ -152,4 +153,3 @@ export const getLiveScoreHandler = async (req, res) => {
     });
   }
 };
-

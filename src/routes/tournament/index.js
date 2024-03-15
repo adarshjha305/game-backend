@@ -1,29 +1,24 @@
 import express from "express";
-import { createTournamentHandler } from "./post";
-import { privateKeyMiddleware } from "../../middleware/privateKeyCheck";
+import { createFixtureHandler, createTournamentHandler } from "./post";
 import { listTournamentsHandler } from "./get";
+import { authenticateHost } from "../../middleware/hostAuthentication";
 
 const tournamentRouter = express.Router();
 
+tournamentRouter.post("/create", authenticateHost, createTournamentHandler);
+
+tournamentRouter.get("/list", authenticateHost, listTournamentsHandler);
 
 tournamentRouter.post(
-    "/create",
-    privateKeyMiddleware,
-    createTournamentHandler
-  );
+  "/create-fixture/:tournamentId/:eventId",
+  authenticateHost,
+  createFixtureHandler
+);
 
-
-tournamentRouter.get(
-    "/list",
-    privateKeyMiddleware,
-    listTournamentsHandler
-  );
-  
 // tournamentRouter.post(
 //     "/add-tournament",
 //     privateKeyMiddleware,
 //     addTournament
 //   );
 
-
-  export default tournamentRouter;
+export default tournamentRouter;
