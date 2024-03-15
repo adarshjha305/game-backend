@@ -54,6 +54,9 @@ export const scoreUpdateMatchHandler = async (req, res) => {
     // check Validation
     await scoreUpdateMatchValidation.validateAsync(req.body);
 
+    // winner
+    // tie
+
     // find and update score
     let updatedData = await BadmintonMatchModel.findOneAndUpdate(
       {

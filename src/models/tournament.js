@@ -27,7 +27,7 @@ const TournamentSchema = new mongoose.Schema({
   },
   // type: { type: String, required: true, enum: ["SOLO", "DUO"] },
   startDateAndTime: { type: String, required: true },
-  endDateAndTime: { type: String, required: true },
+  // endDateAndTime: { type: String, required: true },
   // maxParticipants: { type: Number, required: true },
   // minParticipants: { type: Number, required: true },
   registrationEndDateTime: { type: String, required: true },
