@@ -5,6 +5,7 @@ const badmintonMatchSchema = new mongoose.Schema({
   _id: { type: String, required: true, trim: true },
   hostId: { type: String, required: true },
   tournamentId: { type: String, required: true },
+  eventId: { type: String, required: true },
   player1: { type: String, required: true },
   player2: { type: String, required: true },
   gameId: { type: String, required: true },

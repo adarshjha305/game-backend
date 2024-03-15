@@ -37,6 +37,7 @@ const EventSchema = new mongoose.Schema({
   dayStartTime: { type: String, required: true },
   dayEndTime: { type: String, required: true },
   perMatchMaxTime: { type: Number, required: true },
+  restTime: { type: String, required: true },
   created_by: { type: String },
   updated_by: { type: String },
   created_at: { type: String },

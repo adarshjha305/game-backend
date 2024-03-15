@@ -385,6 +385,4 @@ export const generateTheMatchScheduleForKnockOut = (
   };
 };
 
-// export const provideDateToMatchScheduled = async (finalMatches) => {
-
-// };
+export const provideDateToMatchScheduled = async (finalMatches) => {};
