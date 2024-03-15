@@ -36,6 +36,7 @@ const EventSchema = new mongoose.Schema({
   isActive: { type: Boolean, required: true, default: true },
   dayStartTime: { type: String, required: true },
   dayEndTime: { type: String, required: true },
+  perMatchMaxTime: { type: Number, required: true },
   created_by: { type: String },
   updated_by: { type: String },
   created_at: { type: String },
