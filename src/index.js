@@ -15,6 +15,7 @@ import playerRouter from "./routes/player";
 import locationRouter from "./routes/location";
 import venueRouter from "./routes/venue";
 import participantRouter from "./routes/participant";
+import eventRouter from "./routes/event";
 // import { generateTheMatchScheduleForKnockOut } from "./commons/common-functions";
 
 // let playerArray = [
@@ -118,6 +119,7 @@ app.use("/api/player", playerRouter);
 app.use("/api/location", locationRouter);
 app.use("/api/venue", venueRouter);
 app.use("/api/participant", participantRouter);
+app.use("/api/event", eventRouter);
 
 app.use(express.json());
 
