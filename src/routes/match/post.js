@@ -7,7 +7,7 @@ import {
   scoreUpdateMatchValidation,
   updateMatchValidation,
 } from "../../helpers/validations/match.validation";
-import BadmintonMatchModel from "../../models/match";
+import BadmintonMatchModel from "../../models/badmintonMatch";
 
 // update Match
 export const updateMatchHandler = async (req, res) => {

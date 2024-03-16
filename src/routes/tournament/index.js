@@ -1,5 +1,9 @@
 import express from "express";
-import { createFixtureHandler, createTournamentHandler } from "./post";
+import {
+  createBadmintonFixtureHandler,
+  createFixtureHandler,
+  createTournamentHandler,
+} from "./post";
 import { deleteTournamentHandler, listTournamentsHandler } from "./get";
 import { authenticateHost } from "../../middleware/hostAuthentication";
 

@@ -21,7 +21,7 @@ const badmintonMatchSchema = new mongoose.Schema({
   score: {
     type: [
       {
-        teamId: { type: string },
+        teamId: { type: String },
         score: { type: Number, required: true, default: 0 },
       },
     ],
@@ -45,6 +45,9 @@ const badmintonMatchSchema = new mongoose.Schema({
   isDeleted: { type: Boolean, default: false },
 });
 
-const BadmintonMatchModel = mongoose.model("participant", badmintonMatchSchema);
+const BadmintonMatchModel = mongoose.model(
+  "badminton-match",
+  badmintonMatchSchema
+);
 
 export default BadmintonMatchModel;
