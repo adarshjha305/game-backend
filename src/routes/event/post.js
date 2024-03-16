@@ -2,7 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import { responseGenerators } from "../../lib/utils";
 import { ValidationError } from "webpack";
 import { CustomError } from "../../helpers/custome.error";
-import { getCurrentUnix } from "../../commons/common-functions";
+import { dateToUnix, getCurrentUnix } from "../../commons/common-functions";
 import EventModel from "../../models/events";
 import {
   createEventValidation,
@@ -18,6 +18,7 @@ export const createEventHandler = async (req, res) => {
     // Create a new event
     let newVenue = await EventModel.create({
       ...req.body,
+      startDateAndTime: dateToUnix(req.body.startDateAndTime),
       created_by: req.session.hostId,
       updated_by: req.session.hostId,
       created_at: getCurrentUnix(),
@@ -54,6 +55,7 @@ export const updateEventHandler = async (req, res) => {
       { _id: req.params.id, isDeleted: false },
       {
         ...req.body,
+        startDateAndTime: dateToUnix(req.body.startDateAndTime),
         updated_at: getCurrentUnix(),
         updated_by: req.body.hostId,
       },

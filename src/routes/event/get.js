@@ -8,7 +8,10 @@ import EventModel from "../../models/events";
 // list Event
 export const listEventHandler = async (req, res) => {
   try {
-    let where = { isDeleted: false };
+    let where = {
+      isDeleted: false,
+      hostId: req.session._id,
+    };
 
     // search as hostId
     if (req.query?.hostId) {
@@ -127,10 +130,12 @@ export const singleEventHandler = async (req, res) => {
     if (!req?.params?.id) throw new CustomError(`Please provide plan ID.`);
 
     let EventData = await EventModel.findOne({
-      hostId: req.session.hostId,
+      hostId: req.session._id,
       isDeleted: false,
       _id: req.params.id,
     });
+
+    if (!EventData) throw new CustomError(`Event not found`);
 
     return res
       .status(StatusCodes.OK)
