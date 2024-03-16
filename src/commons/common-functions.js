@@ -247,7 +247,7 @@ export const flatten = (arr) => {
   );
 };
 
-export const generateTheMatchScheduleForKnockOut = (
+export const generateTheMatchBadmintonScheduleForKnockOut = (
   playerCount,
   playerArray
 ) => {
@@ -395,7 +395,7 @@ export const generateTheMatchScheduleForKnockOut = (
 };
 
 /** Use to add the date for each match based on event configurations */
-export const provideDateToMatchScheduled = async (
+export const provideDateToBadmintonMatchScheduled = async (
   finalMatches,
   eventId,
   tournamentId
@@ -410,9 +410,36 @@ export const provideDateToMatchScheduled = async (
     isDeleted: false,
   });
 
-  let startData = eventsData.startDateAndTime;
+  let currentTime = eventsData.startDateAndTime;
 
+  let scheduleMatch = [];
   /** Loop to add dates and time for each match */
-  for (const iterator of finalMatches) {
+  for (let i = 0; i < finalMatches; i++) {
+    const matchStartTime = currentTime;
+    const matchEndTime = matchStartTime.add(
+      eventsData.perMatchMaxTime,
+      "minute"
+    );
+
+    // Check if match end time exceeds day end time
+    if (
+      matchEndTime.isAfter(
+        dayjs(currentTime.format("YYYY-MM-DD") + " " + EventModel.dayEndTime)
+      )
+    ) {
+      // If exceeds, reset current time to next day's start time
+      currentTime = currentTime
+        .add(1, "day")
+        .startOf("day")
+        .add(EventModel.dayStartTime.split(":")[0], "hour")
+        .add(EventModel.dayStartTime.split(":")[1], "minute");
+    }
+
+    scheduleMatch.push({ ...finalMatches[i], matchStartTime, matchEndTime });
+
+    // Update current time for next match with rest time
+    currentTime = matchEndTime.add(EventModel.perMatchRestTime, "minute");
   }
+
+  return scheduleMatch;
 };

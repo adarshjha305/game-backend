@@ -1,5 +1,5 @@
 import express from "express";
-import { createFixtureHandler, createTournamentHandler } from "./post";
+import { createBadmintonFixtureHandler, createTournamentHandler } from "./post";
 import { listTournamentsHandler } from "./get";
 import { authenticateHost } from "../../middleware/hostAuthentication";
 
@@ -10,9 +10,9 @@ tournamentRouter.post("/create", authenticateHost, createTournamentHandler);
 tournamentRouter.get("/list", authenticateHost, listTournamentsHandler);
 
 tournamentRouter.post(
-  "/create-fixture/:tournamentId/:eventId",
+  "/create-badminton-fixture/:tournamentId/:eventId",
   authenticateHost,
-  createFixtureHandler
+  createBadmintonFixtureHandler
 );
 
 // tournamentRouter.post(

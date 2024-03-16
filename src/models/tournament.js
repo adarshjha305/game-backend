@@ -35,7 +35,7 @@ const TournamentSchema = new mongoose.Schema({
   banner: { type: String, required: true },
   // minAge: { type: String, required: true },
   // maxAge: { type: String, required: true },
-  // tournamentFee: { type: Number, required: true },
+  tournamentFee: { type: Number, required: true },
   contactPerson: { type: String, required: true },
   contactPhone: { type: String },
   contactEmail: { type: String },

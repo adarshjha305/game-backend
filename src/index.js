@@ -16,38 +16,38 @@ import locationRouter from "./routes/location";
 import venueRouter from "./routes/venue";
 import participantRouter from "./routes/participant";
 import eventRouter from "./routes/event";
-import { generateTheMatchScheduleForKnockOut } from "./commons/common-functions";
-import { generateTheMatchSchedule } from "./scripts";
+// import { generateTheMatchScheduleForKnockOut } from "./commons/common-functions";
+// import { generateTheMatchSchedule } from "./scripts";
 
-let playerArray = [
-  "player1",
-  "player2",
-  "player3",
-  "player4",
-  "player5",
-  "player6",
-  "player7",
-  "player8",
-  "player9",
-  "player10",
-  "player11",
-  "player12",
-  "player13",
-  "player14",
-  "player15",
-  "player16",
-  "player17",
-  "player18",
-  "player19",
-  "player20",
-  "player21",
-];
+// let playerArray = [
+//   "player1",
+//   "player2",
+//   "player3",
+//   "player4",
+//   "player5",
+//   "player6",
+//   "player7",
+//   "player8",
+//   "player9",
+//   "player10",
+//   "player11",
+//   "player12",
+//   "player13",
+//   "player14",
+//   "player15",
+//   "player16",
+//   "player17",
+//   "player18",
+//   "player19",
+//   "player20",
+//   "player21",
+// ];
 
-console.log(
-  JSON.stringify(
-    generateTheMatchScheduleForKnockOut(playerArray.length, playerArray)
-  )
-);
+// console.log(
+//   JSON.stringify(
+//     generateTheMatchScheduleForKnockOut(playerArray.length, playerArray)
+//   )
+// );
 
 // Math.pow(2, Math.floor(Math.log(players) / Math.log(2)))
 
