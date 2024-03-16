@@ -120,3 +120,38 @@ export const deleteEventHandler = async (req, res) => {
     });
   }
 };
+
+// single Event
+export const singleEventHandler = async (req, res) => {
+  try {
+    if (!req?.params?.id) throw new CustomError(`Please provide plan ID.`);
+
+    let EventData = await EventModel.findOne({
+      hostId: req.session.hostId,
+      isDeleted: false,
+      _id: req.params.id,
+    });
+
+    return res
+      .status(StatusCodes.OK)
+      .send(responseGenerators(EventData, StatusCodes.OK, "SUCCESS", 0));
+  } catch (error) {
+    if (error instanceof ValidationError || error instanceof CustomError) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .send(
+          responseGenerators({}, StatusCodes.BAD_REQUEST, error.message, 1)
+        );
+    }
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .send(
+        responseGenerators(
+          {},
+          StatusCodes.INTERNAL_SERVER_ERROR,
+          "Internal Server Error",
+          1
+        )
+      );
+  }
+};
