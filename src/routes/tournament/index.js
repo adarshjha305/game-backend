@@ -5,20 +5,17 @@ import { authenticateHost } from "../../middleware/hostAuthentication";
 
 const tournamentRouter = express.Router();
 
+// Create Tournament
 tournamentRouter.post("/create", authenticateHost, createTournamentHandler);
 
+// List Tournament
 tournamentRouter.get("/list", authenticateHost, listTournamentsHandler);
 
+// Create Fixture/Scheduling For Tournament
 tournamentRouter.post(
   "/create-fixture/:tournamentId/:eventId",
   authenticateHost,
   createFixtureHandler
 );
-
-// tournamentRouter.post(
-//     "/add-tournament",
-//     privateKeyMiddleware,
-//     addTournament
-//   );
 
 export default tournamentRouter;
