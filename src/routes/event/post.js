@@ -3,23 +3,23 @@ import { responseGenerators } from "../../lib/utils";
 import { ValidationError } from "webpack";
 import { CustomError } from "../../helpers/custome.error";
 import { getCurrentUnix } from "../../commons/common-functions";
+import EventModel from "../../models/events";
 import {
-  createVenueValidation,
-  updateVenueValidation,
-} from "../../helpers/validations/venue.validation";
-import VenueModel from "../../models/venue";
+  createEventValidation,
+  updateEventValidation,
+} from "../../helpers/validations/event.validation";
 
-// create Venue
-export const createVenueHandler = async (req, res) => {
+// create Event
+export const createEventHandler = async (req, res) => {
   try {
     // check Validation
-    await createVenueValidation.validateAsync(req.body);
+    await createEventValidation.validateAsync(req.body);
 
-    // Create a new Venue
-    let newVenue = await VenueModel.create({
+    // Create a new event
+    let newVenue = await EventModel.create({
       ...req.body,
-      created_by: req.body.hostId,
-      updated_by: req.body.hostId,
+      created_by: req.session.hostId,
+      updated_by: req.session.hostId,
       created_at: getCurrentUnix(),
       updated_at: getCurrentUnix(),
     });
@@ -40,17 +40,17 @@ export const createVenueHandler = async (req, res) => {
   }
 };
 
-// update Venue
-export const updateVenueHandler = async (req, res) => {
+// update Event
+export const updateEventHandler = async (req, res) => {
   try {
     // check Validation
-    await updateVenueValidation.validateAsync({
+    await updateEventValidation.validateAsync({
       ...req.body,
       ...req.params,
     });
 
-    // find and update Venue
-    let updatedData = await VenueModel.findOneAndUpdate(
+    // find and update Event
+    let updatedData = await EventModel.findOneAndUpdate(
       { _id: req.params.id, isDeleted: false },
       {
         ...req.body,
@@ -60,8 +60,8 @@ export const updateVenueHandler = async (req, res) => {
       { new: true }
     );
 
-    // if the Venue  is not exist
-    if (!updatedData) throw new CustomError(`Venue does not exist`);
+    // if the Event  is not exist
+    if (!updatedData) throw new CustomError(`Event does not exist`);
 
     return res
       .status(StatusCodes.OK)
