@@ -26,7 +26,7 @@ export const tournamentValidation = Joi.object({
   contactEmail: Joi.string().email().required(),
 });
 
-export const tournamentFixingValidation = Joi.object({
+export const tournamentBadmintonFixingValidation = Joi.object({
   tournamentId: Joi.string().required(),
   eventId: Joi.number().required(),
 });
