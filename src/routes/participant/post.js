@@ -17,7 +17,8 @@ export const addParticipantHandler = async (req, res) => {
     // validation
     await addParticipantValidation.validateAsync(req.body);
 
-    const { tournamentId, playerId, hostId, teamId, eventId } = req.body;
+    const { tournamentId, playerId, teamId, eventId } = req.body;
+    const hostId = req?.session?._id;
 
     // Check if registration is open
     const tournament = await TournamentModel.findById(tournamentId);
@@ -63,9 +64,9 @@ export const addParticipantHandler = async (req, res) => {
       hostId,
       teamId,
       eventId,
-      paymentStatus: 'PENDING', // Default payment status
-      created_at: new Date().toISOString(), // Timestamp for creation
-      updated_at: new Date().toISOString(), // Timestamp for update
+      paymentStatus: 'PENDING',
+      created_at: getCurrentUnix(),
+      updated_at: getCurrentUnix() ,
     };
     const newParticipant = await ParticipantModel.create(participantData);
 
