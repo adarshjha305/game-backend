@@ -74,3 +74,31 @@ export const listTournamentsHandler = async (req, res) => {
     });
   }
 };
+
+
+export const deleteTournamentHandler = async (req, res) => {
+  try {
+    if (!req.params.id) throw new CustomError(`Please provide valid id`);
+
+    // find and update Event
+    let updatedData = await TournamentModel.findOneAndUpdate(
+      { _id: req.params.id, isDeleted: false },
+      { isDeleted: true, updatedAt: getCurrentUnix(), updatedBy: "" },
+      { new: true }
+    );
+
+    return res
+      .status(StatusCodes.OK)
+      .send(responseGenerators({}, StatusCodes.OK, "SUCCESS", 0));
+  } catch (error) {
+    if (error instanceof ValidationError || error instanceof CustomError) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: error.message,
+      });
+    }
+    console.error(error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: "Internal Server Error",
+    });
+  }
+};
