@@ -16,7 +16,7 @@ export const createEventHandler = async (req, res) => {
     await createEventValidation.validateAsync(req.body);
 
     // Create a new event
-    let newVenue = await EventModel.create({
+    let newEvent = await EventModel.create({
       ...req.body,
       startDateAndTime: dateToUnix(req.body.startDateAndTime),
       created_by: req.session.hostId,
@@ -27,7 +27,7 @@ export const createEventHandler = async (req, res) => {
 
     return res
       .status(StatusCodes.OK)
-      .send(responseGenerators(newVenue, StatusCodes.OK, "SUCCESS", 0));
+      .send(responseGenerators(newEvent, StatusCodes.OK, "SUCCESS", 0));
   } catch (error) {
     if (error instanceof ValidationError || error instanceof CustomError) {
       return res.status(StatusCodes.BAD_REQUEST).json({
