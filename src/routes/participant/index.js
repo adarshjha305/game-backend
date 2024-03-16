@@ -2,14 +2,15 @@ import { Router } from "express";
 import { privateKeyMiddleware } from "../../middleware/privateKeyCheck";
 import { addParticipantHandler } from "./post";
 import { listParticipantHandler } from "./get";
+import { authenticateHost } from "../../middleware/hostAuthentication";
 
 const participantRouter = Router();
 // Add participants
-participantRouter.post(`/add`, privateKeyMiddleware, addParticipantHandler);
+participantRouter.post(`/add`, authenticateHost, addParticipantHandler);
 
 participantRouter.get(
   `/list/:id`,
-  privateKeyMiddleware,
+  authenticateHost,
   listParticipantHandler
 );
 
