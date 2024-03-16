@@ -15,12 +15,14 @@ matchRouter.post(
   scoreUpdateMatchHandler
 );
 
+// Get Live Score
 matchRouter.post(
   "/live-score",
   authenticateHost,
   getLiveScoreHandler
 );
 
+// List Matches
 matchRouter.get(
   "/list/:id",
   authenticateHost,

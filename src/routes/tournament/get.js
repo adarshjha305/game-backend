@@ -76,73 +76,29 @@ export const listTournamentsHandler = async (req, res) => {
 };
 
 
-// export const listTournamentsHandler = async (req, res) => {
-//   try {
-//     let where = { isDeleted: false };
+export const deleteTournamentHandler = async (req, res) => {
+  try {
+    if (!req.params.id) throw new CustomError(`Please provide valid id`);
 
-//     if (req.query?.search) {
-//       where = {
-//         ...where,
-//         ...{
-//           $or: [
-//             { name: new RegExp(req.query.search.toString(), "i") },
-//             { contactPerson: new RegExp(req.query.search.toString(), "i") },
-//             { contactPhone: new RegExp(req.query.search.toString(), "i") },
-//             { contactEmail: new RegExp(req.query.search.toString(), "i") },
-//           ],
-//         },
-//       };
-//     }
+    // find and update Event
+    let updatedData = await TournamentModel.findOneAndUpdate(
+      { _id: req.params.id, isDeleted: false },
+      { isDeleted: true, updatedAt: getCurrentUnix(), updatedBy: "" },
+      { new: true }
+    );
 
-//     // Date-wise filtering
-
-//     if (req.query?.startDate && req.query?.endDate) {
-//       where.startDateAndTime = {
-//         $gte: getUnixStartTime(dateToUnix(req.query.startDate)), 
-//         $lte: getUnixEndTime(dateToUnix(req.query.endDate)),
-//       };
-//     } else if (req.query?.startDate) {
-//       where.startDateAndTime = {
-//         $gte: getUnixStartTime(dateToUnix(req.query.startDate)), 
-//       };
-//     } else if (req.query?.endDate) {
-//       where.endDateAndTime = {
-//         $lte: getUnixEndTime(dateToUnix(req.query.endDate)),  
-//       };
-//     }
-
-//     const pagination = setPagination(req.query);
-
-//     const tournaments = await TournamentModel.find(where)
-//       .sort(pagination.sort)
-//       .skip(pagination.offset)
-//       .limit(pagination.limit)
-//       .lean()
-//       .exec();
-
-//     const total_count = await TournamentModel.countDocuments(where);
-
-//     return res.status(StatusCodes.OK).send(
-//       responseGenerators(
-//         {
-//           paginatedData: tournaments,
-//           totalCount: total_count,
-//           itemsPerPage: pagination.limit,
-//         },
-//         StatusCodes.OK,
-//         "SUCCESS",
-//         0
-//       )
-//     );
-//   } catch (error) {
-//     if (error instanceof ValidationError || error instanceof CustomError) {
-//       return res.status(StatusCodes.BAD_REQUEST).json({
-//         message: error.message,
-//       });
-//     }
-//     console.error(error);
-//     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-//       message: "Internal Server Error",
-//     });
-//   }
-// };
+    return res
+      .status(StatusCodes.OK)
+      .send(responseGenerators({}, StatusCodes.OK, "SUCCESS", 0));
+  } catch (error) {
+    if (error instanceof ValidationError || error instanceof CustomError) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: error.message,
+      });
+    }
+    console.error(error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: "Internal Server Error",
+    });
+  }
+};
