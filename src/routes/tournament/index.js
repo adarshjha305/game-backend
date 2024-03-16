@@ -16,9 +16,9 @@ tournamentRouter.get("/delete/:id", authenticateHost, deleteTournamentHandler);
 
 // Create Fixture/Scheduling For Tournament
 tournamentRouter.post(
-  "/create-fixture/:tournamentId/:eventId",
+  "/create-badminton-fixture/:tournamentId/:eventId",
   authenticateHost,
-  createFixtureHandler
+  createBadmintonFixtureHandler
 );
 
 export default tournamentRouter;

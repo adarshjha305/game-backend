@@ -17,6 +17,7 @@ import venueRouter from "./routes/venue";
 import participantRouter from "./routes/participant";
 import eventRouter from "./routes/event";
 // import { generateTheMatchScheduleForKnockOut } from "./commons/common-functions";
+// import { generateTheMatchSchedule } from "./scripts";
 
 // let playerArray = [
 //   "player1",

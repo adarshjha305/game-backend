@@ -2,7 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import { responseGenerators } from "../../lib/utils";
 import { ValidationError } from "webpack";
 import { CustomError } from "../../helpers/custome.error";
-import { getCurrentUnix } from "../../commons/common-functions";
+import { dateToUnix, getCurrentUnix } from "../../commons/common-functions";
 import EventModel from "../../models/events";
 import {
   createEventValidation,
@@ -16,8 +16,9 @@ export const createEventHandler = async (req, res) => {
     await createEventValidation.validateAsync(req.body);
 
     // Create a new event
-    let newVenue = await EventModel.create({
+    let newEvent = await EventModel.create({
       ...req.body,
+      startDateAndTime: dateToUnix(req.body.startDateAndTime),
       created_by: req.session.hostId,
       updated_by: req.session.hostId,
       created_at: getCurrentUnix(),
@@ -26,7 +27,7 @@ export const createEventHandler = async (req, res) => {
 
     return res
       .status(StatusCodes.OK)
-      .send(responseGenerators(newVenue, StatusCodes.OK, "SUCCESS", 0));
+      .send(responseGenerators(newEvent, StatusCodes.OK, "SUCCESS", 0));
   } catch (error) {
     if (error instanceof ValidationError || error instanceof CustomError) {
       return res.status(StatusCodes.BAD_REQUEST).json({
@@ -54,6 +55,7 @@ export const updateEventHandler = async (req, res) => {
       { _id: req.params.id, isDeleted: false },
       {
         ...req.body,
+        startDateAndTime: dateToUnix(req.body.startDateAndTime),
         updated_at: getCurrentUnix(),
         updated_by: req.body.hostId,
       },

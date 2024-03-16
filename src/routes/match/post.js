@@ -100,7 +100,9 @@ export const getLiveScoreHandler = async (req, res) => {
 
     // Ensure matchId and tournamentId are provided in the request body
     if (!matchId || !tournamentId || !eventId) {
-      throw new CustomError("Match ID or Tournament ID or Event ID are required");
+      throw new CustomError(
+        "Match ID or Tournament ID or Event ID are required"
+      );
     }
 
     // Find the match based on tournamentId and matchId
@@ -157,5 +159,38 @@ export const getLiveScoreHandler = async (req, res) => {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       message: "Internal Server Error",
     });
+  }
+};
+
+/** map the file to get the single match object for database insertion */
+const singleBadmintonMatchMapper = (
+  singleMatch,
+  tournamentId,
+  eventId,
+  hostId
+) => {
+  return {
+    hostId: hostId,
+    locationId: "",
+  };
+};
+
+/** Add match participant */
+export const AddBadmintonMatchWithParticipants = async (
+  matchData,
+  tournamentId,
+  eventId,
+  hostId
+) => {
+  let finalMatchArrayFromInsertion = [];
+  for (const singleMatch of matchData) {
+    finalMatchArrayFromInsertion.push(
+      singleBadmintonMatchMapper({
+        ...singleMatch,
+        tournamentId,
+        eventId,
+        hostId,
+      })
+    );
   }
 };

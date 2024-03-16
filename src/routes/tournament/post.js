@@ -4,15 +4,19 @@ import { CustomError } from "../../helpers/custome.error";
 import { StatusCodes } from "http-status-codes";
 import { responseGenerators } from "../../lib/utils";
 import {
-  tournamentFixingValidation,
+  tournamentBadmintonFixingValidation,
   tournamentValidation,
 } from "../../helpers/validations/tournament.validation";
 import {
   dateToUnix,
   generateTheMatchScheduleForKnockOut,
   getCurrentUnix,
+  generateTheMatchBadmintonScheduleForKnockOut,
+  provideDateToBadmintonMatchScheduled,
 } from "../../commons/common-functions";
 import ParticipantModel from "../../models/participant";
+import EventModel from "../../models/events";
+import { AddBadmintonMatchWithParticipants } from "../match/post";
 
 // create tournament.
 export const createTournamentHandler = async (req, res) => {
@@ -52,16 +56,21 @@ export const createTournamentHandler = async (req, res) => {
       contactEmail: req.body.contactEmail,
       created_by: hostId,
       created_at: getCurrentUnix(),
+      paymentStatus: "PENDING",
+      updated_by: hostId,
+      updated_at: getCurrentUnix(),
     });
 
-    return res.status(StatusCodes.OK).send(
-      responseGenerators(
-        { _id: newTournament._id },
-        StatusCodes.OK,
-        'SUCCESS',
-        0
-      )
-    );
+    return res
+      .status(StatusCodes.OK)
+      .send(
+        responseGenerators(
+          { _id: newTournament._id },
+          StatusCodes.OK,
+          "SUCCESS",
+          0
+        )
+      );
   } catch (error) {
     if (error instanceof ValidationError || error instanceof CustomError) {
       return res.status(StatusCodes.BAD_REQUEST).json({
@@ -70,21 +79,21 @@ export const createTournamentHandler = async (req, res) => {
     }
     console.error(error);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      message: 'Internal Server Error',
+      message: "Internal Server Error",
     });
   }
 };
 
 
 /** Create feature  for the tournament */
-export const createFixtureHandler = async (req, res) => {
+export const createBadmintonFixtureHandler = async (req, res) => {
   try {
     /** validation  */
-    await tournamentFixingValidation.validateAsync(req.params);
+    await tournamentBadmintonFixingValidation.validateAsync(req.params);
 
     /** Check exist */
     const existingTournament = await TournamentModel.findOne({
-      _id: req.params.id,
+      _id: req.params.tournamentId,
       isDeleted: false,
     });
 
@@ -93,16 +102,23 @@ export const createFixtureHandler = async (req, res) => {
       throw new CustomError(`Tournament not found.`);
     }
 
-    if (existingTournament.fixtureCreated) {
-      throw new CustomError(`Tournament already fixed.`);
-    }
+    /**  get the event  */
+    let eventData = await EventModel.findOne({
+      _id: req.params.eventId,
+      isDeleted: false,
+    });
+
+    if (!eventData) throw new CustomError(`Event  not found.`);
+
+    if (eventData.fixtureCreated)
+      throw new CustomError(` Fixture already created`);
 
     /** Create the fixture */
-    if (existingTournament.gameType == "KNOCK_OUT") {
+    if (eventData.gameType == "KNOCK_OUT") {
       /** Create fixture for   gameType = KNOCK_OUT */
       /** get the participants */
       let participantsData = ParticipantModel.find({
-        tournamentId: req.params.id,
+        eventId: req.params.eventId,
       });
 
       if (!participantsData)
@@ -110,8 +126,8 @@ export const createFixtureHandler = async (req, res) => {
 
       /** Check min participants count  */
       if (
-        existingTournament.minParticipants &&
-        participantsData.length < +existingTournament.minParticipants
+        eventData.minParticipants &&
+        participantsData.length < +eventData.minParticipants
       )
         throw new CustomError(
           `participants count is less than  required for fixtures`
@@ -121,14 +137,22 @@ export const createFixtureHandler = async (req, res) => {
       let teamIds = (await participantsData).map((ele) => ele.teamId);
 
       /** Generate matches fixture */
-      let { rounds, fullMatches } = generateTheMatchScheduleForKnockOut(
-        teamIds.length,
-        teamIds
+      let { rounds, fullMatches } =
+        generateTheMatchBadmintonScheduleForKnockOut(teamIds.length, teamIds);
+
+      /** Generate the dates for the scheduled matches */
+      fullMatches = provideDateToBadmintonMatchScheduled(
+        fullMatches,
+        req.params.tournamentId,
+        req.params.eventId
       );
 
-      /** Generate each round */
-      for (const iterator of fullMatches) {
-      }
+      await AddBadmintonMatchWithParticipants(
+        fullMatches,
+        req.params.tournamentId,
+        req.params.eventId,
+        req.tokenData._id
+      );
     } else {
       throw new CustomError(`Please provide the valid game type`);
     }
