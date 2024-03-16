@@ -3,7 +3,6 @@ import Joi from "joi";
 export const createEventValidation = Joi.object({
   hostId: Joi.string().required(),
   locationId: Joi.string().required(),
-  gameId: Joi.string().required(),
   tournamentId: Joi.string().required(),
   status: Joi.string()
     .valid("DRAFT", "ACTIVE", "IN-PROGRESS", "CANCELLED")
@@ -19,7 +18,6 @@ export const createEventValidation = Joi.object({
   minAge: Joi.string().required(),
   maxAge: Joi.string().required(),
   tournamentFee: Joi.number().required(),
-  fixtureCreated: Joi.boolean().required(),
   description: Joi.string(),
   isActive: Joi.boolean().required(),
   startDateAndTime: Joi.string().required(),
@@ -28,11 +26,11 @@ export const createEventValidation = Joi.object({
   perMatchMaxTime: Joi.number().required(),
   perMatchRestTime: Joi.number().required(),
 });
+
 export const updateEventValidation = Joi.object({
   id: Joi.string().required(),
   hostId: Joi.string().required(),
   locationId: Joi.string().required(),
-  gameId: Joi.string().required(),
   tournamentId: Joi.string().required(),
   status: Joi.string()
     .valid("DRAFT", "ACTIVE", "IN-PROGRESS", "CANCELLED")
@@ -48,7 +46,6 @@ export const updateEventValidation = Joi.object({
   minAge: Joi.string().required(),
   maxAge: Joi.string().required(),
   tournamentFee: Joi.number().required(),
-  fixtureCreated: Joi.boolean().required(),
   description: Joi.string(),
   isActive: Joi.boolean().required(),
   startDateAndTime: Joi.string().required(),

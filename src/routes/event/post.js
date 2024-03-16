@@ -18,6 +18,7 @@ export const createEventHandler = async (req, res) => {
     // Create a new event
     let newEvent = await EventModel.create({
       ...req.body,
+      gameId: "wvkk-fizw8e-sMcv8CYxnelxZnoWZ4gi0mgLkradgh1710560703843",
       startDateAndTime: dateToUnix(req.body.startDateAndTime),
       created_by: req.session.hostId,
       updated_by: req.session.hostId,
