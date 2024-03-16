@@ -34,9 +34,11 @@ const EventSchema = new mongoose.Schema({
   fixtureCreated: { type: Boolean, required: true, default: false },
   description: { type: String },
   isActive: { type: Boolean, required: true, default: true },
+  startDateAndTime: { type: String, required: true },
   dayStartTime: { type: String, required: true },
   dayEndTime: { type: String, required: true },
-  perMatchMaxTime: { type: Number, required: true },
+  perMatchMaxTime: { type: Number, required: true }, //New
+  perMatchRestTime: { type: Number, required: true }, // New
   restTime: { type: String, required: true },
   created_by: { type: String },
   updated_by: { type: String },

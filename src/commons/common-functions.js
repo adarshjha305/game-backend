@@ -7,6 +7,7 @@ import utc from "dayjs/plugin/utc";
 import { nanoid } from "nanoid";
 import { totp } from "otplib";
 import configVariables from "../../config";
+import EventModel from "../models/events";
 
 const key = configVariables.ENCRYPT_SECRET;
 const keyBuffer = Buffer.from(key, "hex");
@@ -238,6 +239,14 @@ export const createGroups = (array) => {
   return result;
 };
 
+export const flatten = (arr) => {
+  return arr.reduce(
+    (acc, val) =>
+      Array.isArray(val) ? acc.concat(flatten(val)) : acc.concat(val),
+    []
+  );
+};
+
 export const generateTheMatchScheduleForKnockOut = (
   playerCount,
   playerArray
@@ -385,4 +394,25 @@ export const generateTheMatchScheduleForKnockOut = (
   };
 };
 
-export const provideDateToMatchScheduled = async (finalMatches) => {};
+/** Use to add the date for each match based on event configurations */
+export const provideDateToMatchScheduled = async (
+  finalMatches,
+  eventId,
+  tournamentId
+) => {
+  /** Get all matches in single array */
+  finalMatches = flatten(finalMatches);
+
+  /** get the event configurations */
+  let eventsData = await EventModel.findOne({
+    _id: eventId,
+    tournamentId: tournamentId,
+    isDeleted: false,
+  });
+
+  let startData = eventsData.startDateAndTime;
+
+  /** Loop to add dates and time for each match */
+  for (const iterator of finalMatches) {
+  }
+};

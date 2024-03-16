@@ -149,3 +149,65 @@ export const generateTheMatchSchedule = (playerCount, playerArray) => {
 };
 
 // generateTheMatchSchedule(playerCount, playerArray);
+
+const dayjs = require("dayjs");
+
+function scheduleMatches(
+  startDateAndTime,
+  dayStartTime,
+  dayEndTime,
+  perMatchMaxTime,
+  numberOfMatches,
+  perMatchRestTime
+) {
+  const matches = [];
+  let currentTime = dayjs(startDateAndTime);
+
+  for (let i = 0; i < numberOfMatches; i++) {
+    const matchStartTime = currentTime;
+    const matchEndTime = matchStartTime.add(perMatchMaxTime, "minute");
+
+    // Check if match end time exceeds day end time
+    if (
+      matchEndTime.isAfter(
+        dayjs(currentTime.format("YYYY-MM-DD") + " " + dayEndTime)
+      )
+    ) {
+      // If exceeds, reset current time to next day's start time
+      currentTime = currentTime
+        .add(1, "day")
+        .startOf("day")
+        .add(dayStartTime.split(":")[0], "hour")
+        .add(dayStartTime.split(":")[1], "minute");
+    }
+
+    matches.push({ matchStartTime, matchEndTime });
+
+    // Update current time for next match with rest time
+    currentTime = matchEndTime.add(perMatchRestTime, "minute");
+  }
+
+  return matches;
+}
+
+const startDateAndTime = "2024-03-16T08:00:00"; // Example start date and time
+const dayStartTime = "08:00"; // Example day start time
+const dayEndTime = "20:00"; // Example day end time
+const perMatchMaxTime = 90; // Example maximum duration of a match in minutes
+const numberOfMatches = 90; // Example number of matches
+const perMatchRestTime = 15; // Example rest time between matches in minutes
+
+const matchSchedules = scheduleMatches(
+  startDateAndTime,
+  dayStartTime,
+  dayEndTime,
+  perMatchMaxTime,
+  numberOfMatches,
+  perMatchRestTime
+);
+console.log(
+  matchSchedules.map((match) => ({
+    matchStartTime: match.matchStartTime.format(),
+    matchEndTime: match.matchEndTime.format(),
+  }))
+);
