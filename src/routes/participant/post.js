@@ -17,7 +17,7 @@ export const addParticipantHandler = async (req, res) => {
     // validation
     await addParticipantValidation.validateAsync(req.body);
 
-    const { tournamentId, playerId, hostId, teamId } = req.body;
+    const { tournamentId, playerId, hostId, teamId, eventId } = req.body;
 
     // Check if registration is open
     const tournament = await TournamentModel.findById(tournamentId);
@@ -35,15 +35,20 @@ export const addParticipantHandler = async (req, res) => {
     }
 
     // Check if player exists
-    const player = await PlayerModel.findById(playerId);
+    let player;
+    if (playerId) {
+      player = await PlayerModel.findById(playerId);
+    } else if (eventId) {
+      player = await PlayerModel.findOne({ eventId });
+    }
     if (!player) {
-      throw new CustomError(`Invalid player ID`);
+      throw new CustomError(`Invalid player ID or eventId`);
     }
 
-    // Check if player already exists in the tournament
+    // Check if participant already exists in the tournament
     const existingParticipant = await ParticipantModel.findOne({
       tournamentId,
-      playerId,
+      playerId: player._id,
       hostId,
       teamId,
     });
@@ -52,36 +57,35 @@ export const addParticipantHandler = async (req, res) => {
     }
 
     // Create participant
-    const participantData = { ...req.body, paymentStatus: "PENDING" };
+    const participantData = {
+      tournamentId,
+      playerId: player._id,
+      hostId,
+      teamId,
+      eventId,
+      paymentStatus: 'PENDING', // Default payment status
+      created_at: new Date().toISOString(), // Timestamp for creation
+      updated_at: new Date().toISOString(), // Timestamp for update
+    };
     const newParticipant = await ParticipantModel.create(participantData);
 
-    return res
-      .status(StatusCodes.OK)
-      .send(
-        responseGenerators(
-          { _id: newParticipant._id },
-          StatusCodes.OK,
-          "Participant added successfully",
-          0
-        )
-      );
+    return res.status(StatusCodes.OK).send(
+      responseGenerators(
+        { _id: newParticipant._id },
+        StatusCodes.OK,
+        'Participant added successfully',
+        0
+      )
+    );
   } catch (error) {
     if (error instanceof ValidationError || error instanceof CustomError) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .send(
-          responseGenerators({}, StatusCodes.BAD_REQUEST, error.message, 1)
-        );
-    }
-    return res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .send(
-        responseGenerators(
-          {},
-          StatusCodes.INTERNAL_SERVER_ERROR,
-          "Internal Server Error",
-          1
-        )
+      return res.status(StatusCodes.BAD_REQUEST).send(
+        responseGenerators({}, StatusCodes.BAD_REQUEST, error.message, 1)
       );
+    }
+    console.error(error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(
+      responseGenerators({}, StatusCodes.INTERNAL_SERVER_ERROR, 'Internal Server Error', 1)
+    );
   }
 };

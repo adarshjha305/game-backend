@@ -63,6 +63,7 @@ export const scoreUpdateMatchHandler = async (req, res) => {
         _id: req.body.id,
         isDeleted: false,
         tournamentId: req.body.tournamentId,
+        eventId: req.body.eventId,
         "score.type.0.teamId": req.body.score.type[0].teamId,
         "score.type.1.teamId": req.body.score.type[1].teamId,
       },
@@ -95,16 +96,17 @@ export const scoreUpdateMatchHandler = async (req, res) => {
 
 export const getLiveScoreHandler = async (req, res) => {
   try {
-    const { matchId, tournamentId } = req.body;
+    const { matchId, eventId, tournamentId } = req.body;
 
     // Ensure matchId and tournamentId are provided in the request body
-    if (!matchId || !tournamentId) {
-      throw new CustomError("Match ID and Tournament ID are required");
+    if (!matchId || !tournamentId || !eventId) {
+      throw new CustomError("Match ID or Tournament ID or Event ID are required");
     }
 
     // Find the match based on tournamentId and matchId
     const match = await BadmintonMatchModel.findOne({
       _id: matchId,
+      eventId: req.body.eventId,
       tournamentId: tournamentId,
       isDeleted: false,
     });
@@ -126,6 +128,7 @@ export const getLiveScoreHandler = async (req, res) => {
     const responseData = {
       matchId: match._id,
       tournamentId: match.tournamentId,
+      eventId: match.eventId,
       gameId: match.gameId,
       matchType: match.matchType,
       startDateAndTime: match.startDateAndTime,

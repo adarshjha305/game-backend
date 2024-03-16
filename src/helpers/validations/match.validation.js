@@ -10,6 +10,7 @@ export const updateMatchValidation = Joi.object({
 export const scoreUpdateMatchValidation = Joi.object({
   id: Joi.string().required(),
   tournamentId: Joi.string().required(),
+  eventId: Joi.string().required(),
   type: Joi.array()
     .items(
       Joi.object({

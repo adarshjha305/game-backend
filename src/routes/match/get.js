@@ -6,13 +6,22 @@ import { ValidationError } from "joi";
 
 export const listMatchesHandler = async (req, res) => {
   try {
-    const tournamentId = req.params.id;
+    const { id: tournamentId, eventId } = req.params;
 
-    // Find all matches based on the tournamentId
-    const matches = await BadmintonMatchModel.find({
-      tournamentId: tournamentId,
+    let where = {
       isDeleted: false,
-    });
+    };
+
+    if (tournamentId) {
+      where.tournamentId = tournamentId;
+    }
+
+    if (eventId) {
+      where.eventId = eventId;
+    }
+
+    // Find all matches based on the tournamentId or eventId
+    const matches = await BadmintonMatchModel.find(where);
 
     const responseData = matches.map((match) => ({
       matchId: match._id,
@@ -24,16 +33,14 @@ export const listMatchesHandler = async (req, res) => {
       status: match.status,
     }));
 
-    return res
-      .status(StatusCodes.OK)
-      .send(
-        responseGenerators(
-          responseData,
-          StatusCodes.OK,
-          "Matches fetched successfully",
-          0
-        )
-      );
+    return res.status(StatusCodes.OK).send(
+      responseGenerators(
+        responseData,
+        StatusCodes.OK,
+        "Matches fetched successfully",
+        0
+      )
+    );
   } catch (error) {
     if (error instanceof ValidationError || error instanceof CustomError) {
       return res.status(StatusCodes.BAD_REQUEST).json({
@@ -46,6 +53,7 @@ export const listMatchesHandler = async (req, res) => {
     });
   }
 };
+
 
 // export const getLiveScoreHandler = async (req, res) => {
 //   try {
