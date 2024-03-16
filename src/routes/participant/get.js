@@ -9,17 +9,24 @@ import { setPagination } from "../../commons/common-functions";
 
 export const listParticipantHandler = async (req, res) => {
   try {
-    const tournamentId = req.params.id;
+    const { id: tournamentId, eventId } = req.params;
 
-    if (!tournamentId) {
-      throw new CustomError("Tournament ID is required");
+    if (!tournamentId && !eventId) {
+      throw new CustomError("Tournament ID or Event ID is required");
     }
 
     const where = {
-      tournamentId,
       isDeleted: false,
       paymentStatus: "COMPLETED",
     };
+
+    if (tournamentId) {
+      where.tournamentId = tournamentId;
+    }
+
+    if (eventId) {
+      where.eventId = eventId;
+    }
 
     const pagination = setPagination(where);
 
@@ -64,3 +71,4 @@ export const listParticipantHandler = async (req, res) => {
       );
   }
 };
+

@@ -72,13 +72,13 @@ export const listPlayerHandler = async (req, res) => {
 export const deletePlayer = async (req, res) => {
     try {
       const { id: _id } = req.params;
-      const client = await PlayerModel.findOne({ _id, isDeleted: false });
+      const player = await PlayerModel.findOne({ _id, isDeleted: false });
   
-      if (!client) throw new CustomError(`This Player could not be found.`);
+      if (!player) throw new CustomError(`This Player could not be found.`);
   
-      client.isDeleted = true;
+      player.isDeleted = true;
   
-      await client.save();
+      await player.save();
   
       return res
         .status(StatusCodes.OK)

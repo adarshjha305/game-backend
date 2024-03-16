@@ -5,6 +5,7 @@ const ParticipantSchema = new mongoose.Schema({
   _id: { type: String, required: true, trim: true, default: generatePublicId },
   hostId: { type: String, required: true },
   tournamentId: { type: String, required: true },
+  eventId: { type: String, required: true },
   playerId: { type: String, required: true },
   teamId: { type: String, required: true },
   paymentStatus: {
