@@ -1,7 +1,6 @@
 import Joi from "joi";
 
 export const createEventValidation = Joi.object({
-  hostId: Joi.string().required(),
   locationId: Joi.string().required(),
   tournamentId: Joi.string().required(),
   status: Joi.string()

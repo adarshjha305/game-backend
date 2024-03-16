@@ -1,8 +1,8 @@
 import { StatusCodes } from "http-status-codes";
 import { responseGenerators } from "../../lib/utils";
-import { ValidationError } from "webpack";
+import { ValidationError } from "joi";
 import { CustomError } from "../../helpers/custome.error";
-import { dateToUnix, getCurrentUnix } from "../../commons/common-functions";
+import { dateToUnix, generatePublicId, getCurrentUnix } from "../../commons/common-functions";
 import EventModel from "../../models/events";
 import {
   createEventValidation,
@@ -13,12 +13,13 @@ import {
 export const createEventHandler = async (req, res) => {
   try {
     // check Validation
-    await createEventValidation.validateAsync(req.body);
-
+    await createEventValidation.validateAsync(req.body); 
     // Create a new event
     let newEvent = await EventModel.create({
       ...req.body,
+      _id : generatePublicId(),
       gameId: "wvkk-fizw8e-sMcv8CYxnelxZnoWZ4gi0mgLkradgh1710560703843",
+      hostId: req.session._id,
       startDateAndTime: dateToUnix(req.body.startDateAndTime),
       created_by: req.session.hostId,
       updated_by: req.session.hostId,
