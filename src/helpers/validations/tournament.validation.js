@@ -16,5 +16,5 @@ export const tournamentValidation = Joi.object({
 
 export const tournamentBadmintonFixingValidation = Joi.object({
   tournamentId: Joi.string().required(),
-  eventId: Joi.number().required(),
+  eventId: Joi.string().required(),
 });

@@ -16,14 +16,71 @@ const salt = bcrypt.genSaltSync(10);
 require("dotenv").config();
 dayjs.extend(utc);
 dayjs.extend(timezone);
-dayjs.tz.setDefault("Asia/Kolkata");
-let time_zone = "Asia/Kolkata";
+dayjs.tz.setDefault(configVariables.TIMEZONE);
+let time_zone = configVariables.TIMEZONE;
+
+export const checkMatchEndTimeInTheSameDay = (
+  matchEndTime,
+  currentTime,
+  dayEndTime
+) => {
+  matchEndTime = dayjs.unix(matchEndTime).tz(time_zone);
+  currentTime =
+    dayjs.unix(currentTime).tz(time_zone).format("YYYY-MM-DD").toString() +
+    " " +
+    dayEndTime;
+
+  currentTime = dayjs(currentTime);
+
+  return matchEndTime.isAfter(matchEndTime);
+};
+
+export const checkForToday = (unixData) => {
+  const currentDate = dayjs.unix(unixData).tz(time_zone);
+  const today = dayjs().tz(time_zone).startOf("day");
+  return currentDate.isSame(today, "day");
+};
+
+export const addMonthsCurrentUnix = (currentUnix, months) => {
+  return dayjs
+    .unix(currentUnix)
+    .tz(time_zone)
+    .add(+months, "months")
+    .unix()
+    .toString();
+};
+
+export const addDaysCurrentUnix = (currentUnix, days) => {
+  return dayjs
+    .unix(currentUnix)
+    .tz(time_zone)
+    .add(+days, "days")
+    .unix()
+    .toString();
+};
+
+export const getCurrentEndTime = () => {
+  return dayjs().tz(time_zone).endOf("day").unix().toString();
+};
+
+export const getCurrentStartTime = () => {
+  return dayjs().tz(time_zone).startOf("day").unix().toString();
+};
 
 export const add10MinToUnxi = (currentUnix) => {
   return dayjs
     .unix(currentUnix)
     .tz(time_zone)
     .add(10, "minutes")
+    .unix()
+    .toString();
+};
+
+export const addMinsToUnxi = (currentUnix, mins) => {
+  return dayjs
+    .unix(currentUnix)
+    .tz(time_zone)
+    .add(+mins, "minutes")
     .unix()
     .toString();
 };
@@ -261,10 +318,10 @@ export const generateTheMatchBadmintonScheduleForKnockOut = (
   playerCount,
   playerArray
 ) => {
-  let fullMatches = []; //total match round wise
+  let fullMatches = []; // total match round wise
   let preRoundPlayer;
   let firstByePlayers;
-  let secondRoundNoMatchPlayers;
+  let secondRoundNoMatchPlayers = [];
   let roundMatchesResult = [];
 
   playerArray = shuffleArray(playerArray);
@@ -407,8 +464,8 @@ export const generateTheMatchBadmintonScheduleForKnockOut = (
 /** Use to add the date for each match based on event configurations */
 export const provideDateToBadmintonMatchScheduled = async (
   finalMatches,
-  eventId,
-  tournamentId
+  tournamentId,
+  eventId
 ) => {
   /** Get all matches in single array */
   finalMatches = flatten(finalMatches);
@@ -420,23 +477,23 @@ export const provideDateToBadmintonMatchScheduled = async (
     isDeleted: false,
   });
 
-  let currentTime = eventsData.startDateAndTime;
+  let currentTime = +eventsData.startDateAndTime;
 
   let scheduleMatch = [];
   /** Loop to add dates and time for each match */
-  for (let i = 0; i < finalMatches; i++) {
+  for (let i = 0; i < finalMatches.length; i++) {
     const matchStartTime = currentTime;
-    const matchEndTime = matchStartTime.add(
-      eventsData.perMatchMaxTime,
-      "minute"
+    const matchEndTime = addMinsToUnxi(
+      +matchStartTime,
+      +eventsData.perMatchMaxTime
     );
 
     // Check if match end time exceeds day end time
     if (
-      matchEndTime.isAfter(
-        dayjs(
-          currentTime.format("YYYY-MM-DD") + " " + EventModel.dayEndTime
-        ).tz(time_zone)
+      checkMatchEndTimeInTheSameDay(
+        matchEndTime,
+        currentTime,
+        eventsData.dayEndTime
       )
     ) {
       // If exceeds, reset current time to next day's start time
@@ -451,8 +508,32 @@ export const provideDateToBadmintonMatchScheduled = async (
     scheduleMatch.push({ ...finalMatches[i], matchStartTime, matchEndTime });
 
     // Update current time for next match with rest time
-    currentTime = matchEndTime.add(EventModel.perMatchRestTime, "minute");
+    currentTime = addMinsToUnxi(+matchEndTime, +eventsData.perMatchRestTime);
   }
 
   return scheduleMatch;
+};
+
+export const getCurrentDate = () => {
+  const now = dayjs();
+  return {
+    date: now.format().toString(),
+    tz: dayjs.tz.guess(),
+    offset: dayjs().tz(time_zone).format(),
+    checkForToday: checkForToday(getCurrentUnix()),
+    dateToUnixForFilter: dateToUnixForFilter("2024-03-17"),
+    addMonthsCurrentUnix: addMonthsCurrentUnix(getCurrentUnix(), 1),
+    addDaysCurrentUnix: addDaysCurrentUnix(getCurrentUnix(), 1),
+    getUnixStartTime: getUnixStartTime(getCurrentUnix()),
+    getUnixEndTime: getUnixEndTime(getCurrentUnix()),
+    getCurrentEndTime: getCurrentEndTime(),
+    getCurrentStartTime: getCurrentStartTime(),
+    add10MinToUnxi: add10MinToUnxi(getCurrentUnix()),
+  };
+};
+
+export const getMatchNameText = (inputString) => {
+  const match = inputString.match(/Match \d+/);
+  const matchString = match ? match[0] : null;
+  return matchString;
 };

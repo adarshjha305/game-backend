@@ -1,6 +1,7 @@
 import config from "config";
 
 const configVariables = {
+  ENV: config.get("ENV"),
   SYS_APP_CNF: config.get("SYS_APP_CNF"),
   PRIVATE_API_KEY: config.get("PRIVATE_API_KEY"),
   DATABASE_CONNECTION_URI: config.get("DATABASE_CONNECTION_URI"),

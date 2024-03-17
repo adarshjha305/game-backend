@@ -1,5 +1,9 @@
 import { StatusCodes } from "http-status-codes";
-import { getCurrentUnix } from "../../commons/common-functions";
+import {
+  generatePublicId,
+  getCurrentUnix,
+  getMatchNameText,
+} from "../../commons/common-functions";
 import { CustomError } from "../../helpers/custome.error";
 import { responseGenerators } from "../../lib/utils";
 import { ValidationError } from "webpack";
@@ -162,49 +166,6 @@ export const getLiveScoreHandler = async (req, res) => {
   }
 };
 
-/** map the file to get the single match object for database insertion */
-const singleBadmintonMatchMapper = (
-  singleMatch,
-  tournamentId,
-  eventId,
-  hostId,
-  gameId,
-  eventData
-) => {
-  return {
-    hostId: hostId,
-    tournamentId: tournamentId,
-    eventId: eventId,
-    player1: singleMatch.player1,
-    player2: singleMatch.player2,
-    gameId: gameId,
-    dependentOnMatchResult: singleMatch.dependentOnMatchResult, // Need to check.
-    numOfSets: eventData.numOfSets,
-    maxPoints: eventData.maxPoints,
-    status: eventData.status,
-    score: [
-      {
-        teamId: singleMatch.player1,
-        score: 0,
-      },
-      {
-        teamId: singleMatch.player2,
-        score: 0,
-      },
-    ],
-    matchType: eventData.matchType,
-    venueId: eventData.venueId,
-    gameType: eventData.gameType,
-    round: singleMatch.round,
-    startDateAndTime: singleMatch.startDateAndTime,
-    endDateAndTime: singleMatch.endDateAndTime,
-    created_by: hostId,
-    created_at: getCurrentUnix(),
-    updated_at: getCurrentUnix(),
-    updated_by: hostId,
-  };
-};
-
 /** Add match participant */
 export const AddBadmintonMatchWithParticipants = async (
   matchData,
@@ -216,15 +177,54 @@ export const AddBadmintonMatchWithParticipants = async (
 ) => {
   let finalMatchArrayFromInsertion = [];
   for (const singleMatch of matchData) {
-    finalMatchArrayFromInsertion.push(
-      singleBadmintonMatchMapper({
-        ...singleMatch,
-        tournamentId,
-        eventId,
-        hostId,
-        gameId,
-        eventData,
-      })
-    );
+    // check for dependant match
+    let dependantMatchName = [];
+    let dependantMatchIds = [];
+    let dp1 = getMatchNameText(singleMatch.player1);
+    if (dp1) dependantMatchName.push(dp1);
+    let dp2 = getMatchNameText(singleMatch.player2);
+    if (dp2) dependantMatchName.push(dp2);
+
+    if (dependantMatchName.length) {
+      // check in final array.
+      dependantMatchIds = finalMatchArrayFromInsertion
+        .filter((ele) => ele.name == dp1 || ele.name == dp2)
+        .map((ele) => ele._id);
+    }
+    finalMatchArrayFromInsertion.push({
+      _id: generatePublicId(),
+      name: singleMatch.matchId,
+      hostId: hostId,
+      tournamentId: tournamentId,
+      eventId: eventId,
+      player1: singleMatch.player1,
+      player2: singleMatch.player2,
+      gameId: gameId,
+      dependentOnMatchResult: dependantMatchIds,
+      numOfSets: eventData.numOfSets,
+      maxPoints: eventData.maxPoints,
+      status: "PENDING",
+      score: [
+        {
+          teamId: singleMatch.player1,
+          score: 0,
+        },
+        {
+          teamId: singleMatch.player2,
+          score: 0,
+        },
+      ],
+      matchType: eventData.type,
+      venueId: eventData.venueId[0],
+      gameType: eventData.gameType,
+      round: singleMatch.round,
+      startDateAndTime: singleMatch.matchStartTime,
+      endDateAndTime: singleMatch.matchEndTime,
+      created_by: hostId,
+      created_at: getCurrentUnix(),
+      updated_at: getCurrentUnix(),
+      updated_by: hostId,
+    });
   }
+  await BadmintonMatchModel.insertMany(finalMatchArrayFromInsertion);
 };
