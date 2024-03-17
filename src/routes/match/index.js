@@ -8,25 +8,25 @@ import {
   updateMatchHandler,
 } from "./post";
 
-const matchRouter = express.Router();
+const badmintonMatchRouter = express.Router();
 
 // update match
-matchRouter.post("/update/:id", authenticateHost, updateMatchHandler);
+badmintonMatchRouter.post("/update/:id", authenticateHost, updateMatchHandler);
 
 // update score
-matchRouter.post(
+badmintonMatchRouter.post(
   "/score-update/:id",
   authenticateHost,
   scoreUpdateMatchHandler
 );
 
 // Get Live Score
-matchRouter.post("/live-score", authenticateHost, getLiveScoreHandler);
+badmintonMatchRouter.post("/live-score", authenticateHost, getLiveScoreHandler);
 
 // List Matches
-matchRouter.get("/list/:id", authenticateHost, listMatchesHandler);
+badmintonMatchRouter.get("/list/:id", authenticateHost, listMatchesHandler);
 
 // start Matches
-matchRouter.post("/start-matches", authenticateHost, startMatchHandler);
+badmintonMatchRouter.post("/start-match", authenticateHost, startMatchHandler);
 
-export default matchRouter;
+export default badmintonMatchRouter;

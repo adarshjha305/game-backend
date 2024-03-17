@@ -4,7 +4,6 @@ import {
   getCurrentUnix,
   getMatchNameText,
 } from "../../commons/common-functions";
-import { CustomError } from "../../helpers/custome.error";
 import { responseGenerators } from "../../lib/utils";
 import { ValidationError } from "webpack";
 import {
@@ -13,6 +12,7 @@ import {
   updateMatchValidation,
 } from "../../helpers/validations/match.validation";
 import BadmintonMatchModel from "../../models/badmintonMatch";
+import { CustomError } from "../../helpers/custome.error";
 
 // update Match
 export const updateMatchHandler = async (req, res) => {
@@ -58,6 +58,8 @@ export const scoreUpdateMatchHandler = async (req, res) => {
   try {
     // check Validation
     await scoreUpdateMatchValidation.validateAsync(req.body);
+
+    // check Match exist
 
     // winner
     // tie
@@ -176,7 +178,6 @@ export const startMatchHandler = async (req, res) => {
     // check match id
     const matchData = await BadmintonMatchModel.findOne({
       _id: req.body.matchId,
-      // venueId: req.body.venueId,
       hostId: req.session._id,
       isDeleted: false,
     });
@@ -189,25 +190,41 @@ export const startMatchHandler = async (req, res) => {
     }
 
     // check dependent match are over.
-    if (matchData.dependentOnMatchResult.length()) {
-      // check for winner in dependent match.
+    if (matchData.dependentOnMatchResult.length) {
+      // check for 1st winner in dependent match.
       const firstDependentMatch = matchData.dependentOnMatchResult[0];
 
-      // check match id
+      // check first Dependent Match Status
       const firstDependentMatchStatus = await BadmintonMatchModel.findOne({
         _id: firstDependentMatch,
-        // venueId: req.body.venueId,
         hostId: req.session._id,
         isDeleted: false,
       }).select("status name");
+
+      // if not completed then return
       if (firstDependentMatchStatus !== "COMPLETED") {
         throw new CustomError(
-          `You can't start a match because ${firstDependentMatchStatus.name}`
+          `You can't start this match because ${firstDependentMatchStatus.name} is not Completed`
         );
       }
 
       if (matchData.dependentOnMatchResult.length() > 1) {
-        //
+        // check for 2nd winner in dependent match.
+        const secondDependentMatchID = matchData.dependentOnMatchResult[1];
+
+        // check first Dependent Match Status
+        const secondDependentMatchData = await BadmintonMatchModel.findOne({
+          _id: secondDependentMatchID,
+          hostId: req.session._id,
+          isDeleted: false,
+        }).select("status name");
+
+        // if not completed then return
+        if (secondDependentMatchData !== "COMPLETED") {
+          throw new CustomError(
+            `You can't start this match because ${secondDependentMatchData.name} is not Completed`
+          );
+        }
       }
     }
 
