@@ -1,7 +1,6 @@
 import * as bcrypt from "bcryptjs";
 import crypto from "crypto";
 import dayjs from "dayjs";
-import isBetween from "dayjs/plugin/isBetween";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { nanoid } from "nanoid";
@@ -14,38 +13,39 @@ const keyBuffer = Buffer.from(key, "hex");
 
 const salt = bcrypt.genSaltSync(10);
 
-// eslint-disable-next-line no-undef
 require("dotenv").config();
 dayjs.extend(utc);
 dayjs.extend(timezone);
-dayjs.extend(isBetween);
-// eslint-disable-next-line no-undef
-let time_zone = configVariables.TIMEZONE;
-export const intrmTokenCache = {};
-export const sessionUser = {};
-export const sessionApp = {};
+dayjs.tz.setDefault("Asia/Kolkata");
+let time_zone = "Asia/Kolkata";
 
 export const add10MinToUnxi = (currentUnix) => {
-  return dayjs.unix(currentUnix).add(10, "minutes").unix().toString();
+  return dayjs
+    .unix(currentUnix)
+    .tz(time_zone)
+    .add(10, "minutes")
+    .unix()
+    .toString();
 };
 
 export const checkIsDateAfter = (
   date1,
-  date2 = dayjs().format("DD-MM-YY HH:mm").toString()
+  date2 = dayjs().tz(time_zone).unix()
 ) => {
-  return dayjs(+date1, "DD-MM-YY HH:mm").isAfter(
-    dayjs(+date2, "DD-MM-YY HH:mm")
-  );
+  return dayjs
+    .unix(+date1)
+    .tz(time_zone)
+    .isAfter(dayjs.unix(+date2).tz(time_zone));
 };
 
 export const getMonthStartData = () => {
-  let tData = dayjs();
+  let tData = dayjs().tz(time_zone);
   const startOfMonth = tData.startOf("month");
   return startOfMonth.unix().toString();
 };
 
 export const add7DayToUnxi = (currentUnix) => {
-  return dayjs.unix(currentUnix).add(7, "days").unix().toString();
+  return dayjs.unix(currentUnix).tz(time_zone).add(7, "days").unix().toString();
 };
 
 export const getCurrentUnix = () => {
@@ -190,15 +190,25 @@ export const decryptData = (encryptedText) => {
 };
 
 export const getUnixEndTime = (unixData) => {
-  return dayjs.unix(unixData).endOf("day").unix(unixData).toString();
+  return dayjs
+    .unix(unixData)
+    .tz(time_zone)
+    .endOf("day")
+    .unix(unixData)
+    .toString();
 };
 
-export const dateToUnix = (dateString) => {
-  return dayjs(dateString).unix().toString();
+export const dateToUnixForFilter = (dateString) => {
+  return dayjs.tz(dateString, time_zone).unix().toString();
 };
 
 export const getUnixStartTime = (unixData) => {
-  return dayjs.unix(unixData).startOf("day").unix(unixData).toString();
+  return dayjs
+    .unix(unixData)
+    .tz(time_zone)
+    .startOf("day")
+    .unix(unixData)
+    .toString();
 };
 
 export const delay = (ms) => {
@@ -424,12 +434,15 @@ export const provideDateToBadmintonMatchScheduled = async (
     // Check if match end time exceeds day end time
     if (
       matchEndTime.isAfter(
-        dayjs(currentTime.format("YYYY-MM-DD") + " " + EventModel.dayEndTime)
+        dayjs(
+          currentTime.format("YYYY-MM-DD") + " " + EventModel.dayEndTime
+        ).tz(time_zone)
       )
     ) {
       // If exceeds, reset current time to next day's start time
       currentTime = currentTime
         .add(1, "day")
+        .tz(time_zone)
         .startOf("day")
         .add(EventModel.dayStartTime.split(":")[0], "hour")
         .add(EventModel.dayStartTime.split(":")[1], "minute");

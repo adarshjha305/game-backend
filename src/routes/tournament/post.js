@@ -8,7 +8,7 @@ import {
   tournamentValidation,
 } from "../../helpers/validations/tournament.validation";
 import {
-  dateToUnix,
+  dateToUnixForFilter,
   generateTheMatchScheduleForKnockOut,
   getCurrentUnix,
   generateTheMatchBadmintonScheduleForKnockOut,
@@ -22,13 +22,13 @@ import { AddBadmintonMatchWithParticipants } from "../match/post";
 export const createTournamentHandler = async (req, res) => {
   try {
     await tournamentValidation.validateAsync(req.body);
-    
+
     // Retrieve hostId from session
     const hostId = req?.session?._id;
 
     // Ensure hostId is available
     if (!hostId) {
-      throw new CustomError('HostId not found in session');
+      throw new CustomError("HostId not found in session");
     }
 
     const existingTournament = await TournamentModel.findOne({
@@ -48,8 +48,10 @@ export const createTournamentHandler = async (req, res) => {
       name: req.body.name,
       description: req.body.description,
       sponsors: [],
-      startDateAndTime: dateToUnix(req.body.startDateAndTime),
-      registrationEndDateTime: dateToUnix(req.body.registrationEndDateTime),
+      startDateAndTime: dateToUnixForFilter(req.body.startDateAndTime),
+      registrationEndDateTime: dateToUnixForFilter(
+        req.body.registrationEndDateTime
+      ),
       banner: req.body.banner,
       contactPerson: req.body.contactPerson,
       contactPhone: req.body.contactPhone,
@@ -83,7 +85,6 @@ export const createTournamentHandler = async (req, res) => {
     });
   }
 };
-
 
 /** Create feature  for the tournament */
 export const createBadmintonFixtureHandler = async (req, res) => {
@@ -151,7 +152,9 @@ export const createBadmintonFixtureHandler = async (req, res) => {
         fullMatches,
         req.params.tournamentId,
         req.params.eventId,
-        req.tokenData._id
+        req.tokenData._id,
+        "wvkk-fizw8e-sMcv8CYxnelxZnoWZ4gi0mgLkradgh1710560703843",
+        eventData
       );
     } else {
       throw new CustomError(`Please provide the valid game type`);

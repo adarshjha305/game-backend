@@ -35,7 +35,7 @@ const badmintonMatchSchema = new mongoose.Schema({
     enum: ["KNOCK_OUT", "ROUND_ROBIN"],
   },
   round: { type: Number, required: true },
-  winner: { type: String, required: true },
+  winner: { type: String },
   startDateAndTime: { type: String, required: true },
   endDateAndTime: { type: String, required: true },
   created_by: { type: String },

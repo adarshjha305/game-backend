@@ -3,9 +3,12 @@ import TournamentModel from "../../models/tournament";
 import { CustomError } from "../../helpers/custome.error";
 import { StatusCodes } from "http-status-codes";
 import { responseGenerators } from "../../lib/utils";
-import { dateToUnix, getUnixEndTime, getUnixStartTime, setPagination } from "../../commons/common-functions";
-
-
+import {
+  dateToUnixForFilter,
+  getUnixEndTime,
+  getUnixStartTime,
+  setPagination,
+} from "../../commons/common-functions";
 
 // list tournament.
 
@@ -15,10 +18,10 @@ export const listTournamentsHandler = async (req, res) => {
 
     if (req.query?.search) {
       where.$or = [
-        { name: new RegExp(req.query.search.toString(), 'i') },
-        { contactPerson: new RegExp(req.query.search.toString(), 'i') },
-        { contactPhone: new RegExp(req.query.search.toString(), 'i') },
-        { contactEmail: new RegExp(req.query.search.toString(), 'i') },
+        { name: new RegExp(req.query.search.toString(), "i") },
+        { contactPerson: new RegExp(req.query.search.toString(), "i") },
+        { contactPhone: new RegExp(req.query.search.toString(), "i") },
+        { contactEmail: new RegExp(req.query.search.toString(), "i") },
       ];
     }
 
@@ -26,16 +29,16 @@ export const listTournamentsHandler = async (req, res) => {
 
     if (req.query?.startDate && req.query?.endDate) {
       where.startDateAndTime = {
-        $gte: getUnixStartTime(dateToUnix(req.query.startDate)), 
-        $lte: getUnixEndTime(dateToUnix(req.query.endDate)),
+        $gte: getUnixStartTime(dateToUnixForFilter(req.query.startDate)),
+        $lte: getUnixEndTime(dateToUnixForFilter(req.query.endDate)),
       };
     } else if (req.query?.startDate) {
       where.startDateAndTime = {
-        $gte: getUnixStartTime(dateToUnix(req.query.startDate)), 
+        $gte: getUnixStartTime(dateToUnixForFilter(req.query.startDate)),
       };
     } else if (req.query?.endDate) {
       where.endDateAndTime = {
-        $lte: getUnixEndTime(dateToUnix(req.query.endDate)),  
+        $lte: getUnixEndTime(dateToUnixForFilter(req.query.endDate)),
       };
     }
 
@@ -58,7 +61,7 @@ export const listTournamentsHandler = async (req, res) => {
           itemsPerPage: pagination.limit,
         },
         StatusCodes.OK,
-        'SUCCESS',
+        "SUCCESS",
         0
       )
     );
@@ -70,11 +73,10 @@ export const listTournamentsHandler = async (req, res) => {
     }
     console.error(error);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      message: 'Internal Server Error',
+      message: "Internal Server Error",
     });
   }
 };
-
 
 export const deleteTournamentHandler = async (req, res) => {
   try {

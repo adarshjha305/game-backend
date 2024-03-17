@@ -167,11 +167,41 @@ const singleBadmintonMatchMapper = (
   singleMatch,
   tournamentId,
   eventId,
-  hostId
+  hostId,
+  gameId,
+  eventData
 ) => {
   return {
     hostId: hostId,
-    locationId: "",
+    tournamentId: tournamentId,
+    eventId: eventId,
+    player1: singleMatch.player1,
+    player2: singleMatch.player2,
+    gameId: gameId,
+    dependentOnMatchResult: singleMatch.dependentOnMatchResult, // Need to check.
+    numOfSets: eventData.numOfSets,
+    maxPoints: eventData.maxPoints,
+    status: eventData.status,
+    score: [
+      {
+        teamId: singleMatch.player1,
+        score: 0,
+      },
+      {
+        teamId: singleMatch.player2,
+        score: 0,
+      },
+    ],
+    matchType: eventData.matchType,
+    venueId: eventData.venueId,
+    gameType: eventData.gameType,
+    round: singleMatch.round,
+    startDateAndTime: singleMatch.startDateAndTime,
+    endDateAndTime: singleMatch.endDateAndTime,
+    created_by: hostId,
+    created_at: getCurrentUnix(),
+    updated_at: getCurrentUnix(),
+    updated_by: hostId,
   };
 };
 
@@ -180,7 +210,9 @@ export const AddBadmintonMatchWithParticipants = async (
   matchData,
   tournamentId,
   eventId,
-  hostId
+  hostId,
+  gameId,
+  eventData
 ) => {
   let finalMatchArrayFromInsertion = [];
   for (const singleMatch of matchData) {
@@ -190,6 +222,8 @@ export const AddBadmintonMatchWithParticipants = async (
         tournamentId,
         eventId,
         hostId,
+        gameId,
+        eventData,
       })
     );
   }
