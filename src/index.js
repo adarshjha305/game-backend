@@ -18,6 +18,7 @@ import participantRouter from "./routes/participant";
 import eventRouter from "./routes/event";
 import { getCurrentDate } from "./commons/common-functions";
 import configVariables from "../config";
+import badmintonMatchRouter from "./routes/match";
 // import { generateTheMatchScheduleForKnockOut } from "./commons/common-functions";
 // import { generateTheMatchSchedule } from "./scripts";
 
@@ -122,6 +123,7 @@ app.use("/api/location", locationRouter);
 app.use("/api/venue", venueRouter);
 app.use("/api/participant", participantRouter);
 app.use("/api/event", eventRouter);
+app.use("/api/badminton-match", badmintonMatchRouter);
 
 app.use(express.json());
 

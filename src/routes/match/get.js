@@ -1,8 +1,8 @@
 import { StatusCodes } from "http-status-codes";
-import { CustomError } from "../../helpers/custom.error";
 import { responseGenerators } from "../../lib/utils";
-import BadmintonMatchModel from "../../models/match";
 import { ValidationError } from "joi";
+import { CustomError } from "../../helpers/custome.error";
+import BadmintonMatchModel from "../../models/badmintonMatch";
 
 export const listMatchesHandler = async (req, res) => {
   try {
@@ -33,14 +33,16 @@ export const listMatchesHandler = async (req, res) => {
       status: match.status,
     }));
 
-    return res.status(StatusCodes.OK).send(
-      responseGenerators(
-        responseData,
-        StatusCodes.OK,
-        "Matches fetched successfully",
-        0
-      )
-    );
+    return res
+      .status(StatusCodes.OK)
+      .send(
+        responseGenerators(
+          responseData,
+          StatusCodes.OK,
+          "Matches fetched successfully",
+          0
+        )
+      );
   } catch (error) {
     if (error instanceof ValidationError || error instanceof CustomError) {
       return res.status(StatusCodes.BAD_REQUEST).json({
@@ -53,7 +55,6 @@ export const listMatchesHandler = async (req, res) => {
     });
   }
 };
-
 
 // export const getLiveScoreHandler = async (req, res) => {
 //   try {

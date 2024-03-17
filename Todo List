@@ -1,0 +1,13 @@
+update score
+matchId = 
+event id = 
+[plater1: {id: safdsafsafsf, point : 1}, player2: {id: safdsafsafsf, point : 1}]
+
+1. Match exist 
+2. status should be in progress.
+3. previous score .... 20, 19
+4. current score .... 0 ,1
+5.  match maxPoints is which player  21
+                        --------> response match finished status true.
+6.  update the score.
+    need to return  score  to RTCRtpSender.

@@ -1,13 +1,13 @@
 export class FileTypeIssue extends Error {
   constructor(message) {
     super(message);
-    this.name = 'FileTypeIssue';
+    this.name = "FileTypeIssue";
   }
 }
 
 export class CustomError extends Error {
   constructor(message) {
     super(message);
-    this.name = 'CustomError';
+    this.name = "CustomError";
   }
 }
