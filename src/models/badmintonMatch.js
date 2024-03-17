@@ -1,15 +1,16 @@
 import mongoose from "mongoose";
-import { string } from "joi";
+import { generatePublicId } from "../commons/common-functions";
 
 const badmintonMatchSchema = new mongoose.Schema({
-  _id: { type: String, required: true, trim: true },
+  _id: { type: String, required: true, trim: true, default: generatePublicId },
+  name: { type: String, required: true },
   hostId: { type: String, required: true },
   tournamentId: { type: String, required: true },
   eventId: { type: String, required: true },
   player1: { type: String, required: true },
   player2: { type: String, required: true },
   gameId: { type: String, required: true },
-  dependentOnMatchResult: { type: String },
+  dependentOnMatchResult: { type: [] },
   numOfSets: { type: Number, required: true, trim: true, default: 3 },
   maxPoints: { type: Number, required: true, trim: true, default: 21 },
   status: {

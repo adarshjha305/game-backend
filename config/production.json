@@ -1,4 +1,5 @@
 {
+  "ENV": "production",
   "SYS_APP_CNF": {
     "sender_email": "contact@apttechsols.com",
     "receiver_email": "arpitsh018@gmail.com",

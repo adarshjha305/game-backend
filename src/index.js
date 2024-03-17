@@ -16,6 +16,8 @@ import locationRouter from "./routes/location";
 import venueRouter from "./routes/venue";
 import participantRouter from "./routes/participant";
 import eventRouter from "./routes/event";
+import { getCurrentDate } from "./commons/common-functions";
+import configVariables from "../config";
 // import { generateTheMatchScheduleForKnockOut } from "./commons/common-functions";
 // import { generateTheMatchSchedule } from "./scripts";
 
@@ -102,10 +104,9 @@ app.use((req, res, next) => {
 const health = async (req, res) => {
   try {
     res.json({
-      message: "We are ready to serve the game API's",
-      // eslint-disable-next-line no-undef
-      env: process.env.NODE_ENV || "development",
-      headers: req.headers,
+      message: "We are ready to serve the Sportigig API's",
+      env: configVariables.ENV,
+      dates: getCurrentDate(),
     });
   } catch (error) {
     console.log(error);
