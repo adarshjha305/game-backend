@@ -140,7 +140,7 @@ export const scoreUpdateMatchHandler = async (req, res) => {
       .status(StatusCodes.OK)
       .send(
         responseGenerators(
-          { ...matchData, matchCompleted: false },
+          { ...matchData.toJSON(), matchCompleted: false },
           StatusCodes.OK,
           "Score Updated successfully",
           0
