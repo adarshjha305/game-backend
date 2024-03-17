@@ -5,6 +5,7 @@ import { responseGenerators } from "../../lib/utils";
 import { ValidationError } from "webpack";
 import {
   scoreUpdateMatchValidation,
+  startMatchValidation,
   updateMatchValidation,
 } from "../../helpers/validations/match.validation";
 import BadmintonMatchModel from "../../models/badmintonMatch";
@@ -161,6 +162,58 @@ export const getLiveScoreHandler = async (req, res) => {
     });
   }
 };
+
+// start match
+export const startMatchHandler = async (req, res) => {
+  try {
+    
+    // check Validation
+    await startMatchValidation.validateAsync(req.body);
+    
+    // check match id
+    const matchData = await BadmintonMatchModel.findOne({
+      _id: req.body.matchId,
+      venueId: req.body.venueId,
+      isDeleted: false,
+    });
+
+    // check match status
+    if ((matchData.status !==" PENDING")) {
+      throw new CustomError("You can't start a match because it's either completed or still ongoing.");
+    }
+
+    //     3.  check dependent match are over.
+    //     4. check for winner in dependent match.
+    //    5. update status  to in progress  and venueId && startDateAndTime make that time as current time
+   
+
+    
+    
+
+    // Send the response
+    return res
+      .status(StatusCodes.OK)
+      .send(
+        responseGenerators(
+          ,
+          StatusCodes.OK,
+          "Match Start successfully",
+          0
+        )
+      );
+  } catch (error) {
+    if (error instanceof ValidationError || error instanceof CustomError) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: error.message,
+      });
+    }
+    console.error(error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: "Internal Server Error",
+    });
+  }
+};
+
 
 /** map the file to get the single match object for database insertion */
 const singleBadmintonMatchMapper = (

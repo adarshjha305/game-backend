@@ -21,3 +21,8 @@ export const scoreUpdateMatchValidation = Joi.object({
     .required()
     .length(2),
 });
+
+export const startMatchValidation = Joi.object({
+  matchId: Joi.string().required(),
+  venueId: Joi.string().required(),
+});

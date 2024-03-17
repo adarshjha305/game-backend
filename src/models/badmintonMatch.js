@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { string } from "joi";
 
 const badmintonMatchSchema = new mongoose.Schema({
   _id: { type: String, required: true, trim: true },
