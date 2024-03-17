@@ -5,6 +5,46 @@ import { responseGenerators } from "../../lib/utils";
 import { setPagination } from "../../commons/common-functions";
 import PlayerModel from "../../models/player";
 
+// Get single player details based on playerId
+export const getSinglePlayerDetailsHandler = async (req, res) => {
+  try {
+    const playerId = req.params.playerId;
+
+    const player = await PlayerModel.findOne({ _id: playerId, isDeleted: false });
+
+    if (!player) {
+      throw new CustomError(`Player not found with provided playerId`);
+    }
+
+    const playerDetails = {
+      fname: player.fname,
+      lname: player.lname,
+      gender: player.gender,
+      email: player.email,
+      phone: player.phone,
+      address: player.address,
+      isVerified: player.isVerified,
+      isBlocked: player.isBlocked,
+      created_at: player.created_at,
+      updated_at: player.updated_at
+    };
+
+    return res.status(StatusCodes.OK).send(
+      responseGenerators(playerDetails, StatusCodes.OK, 'Player details found successfully', 0)
+    );
+  } catch (error) {
+    if (error instanceof ValidationError || error instanceof CustomError) {
+      return res.status(StatusCodes.BAD_REQUEST).send(
+        responseGenerators({}, StatusCodes.BAD_REQUEST, error.message, 1)
+      );
+    }
+    console.error(error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(
+      responseGenerators({}, StatusCodes.INTERNAL_SERVER_ERROR, 'Internal Server Error', 1)
+    );
+  }
+};
+
 
 // LIST PLAYER API
 export const listPlayerHandler = async (req, res) => {

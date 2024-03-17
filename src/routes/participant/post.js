@@ -12,7 +12,149 @@ import {
 } from "../../commons/common-functions";
 
 // Add Participant to Tournament API with check for registration status and player existence
-export const addParticipantHandler = async (req, res) => {
+export const addParticipantsToEventHandler = async (req, res) => {
+  try {
+    await addParticipantValidation.validateAsync(req.body);
+    const { tournamentId, eventId, playerIds, teamName } = req.body;
+
+    // Check if tournament exists
+    const tournament = await TournamentModel.findById(tournamentId);
+    if (!tournament) {
+      throw new CustomError(`Tournament not found with the provided ID`);
+    }
+
+    // Check if tournament registration is open
+    const currentUnix = getCurrentUnix();
+    if (!checkIsDateAfter(tournament.registrationEndDateTime, currentUnix)) {
+      throw new CustomError(`Tournament registration is closed`);
+    }
+
+    // Check if event exists
+    const event = await EventModel.findById(eventId);
+    if (!event) {
+      throw new CustomError(`Event not found with the provided ID`);
+    }
+
+    // Check event type and validate playerIds
+    let teamId = generatePublicId();
+    switch (event.type) {
+      case "solo":
+        if (playerIds.length !== 1) {
+          throw new CustomError(`For solo event, playerIds array should contain exactly 1 player`);
+        }
+        break;
+      case "duo":
+        if (playerIds.length !== 2) {
+          throw new CustomError(`For duo event, playerIds array should contain exactly 2 players`);
+        }
+        break;
+      default:
+        throw new CustomError(`Unsupported event type`);
+    }
+
+    let isTeamNameExists = await ParticipantModel.findOne({eventId,teamName});
+    
+    if (isTeamNameExists){
+      throw new CustomError(`Team Name Already Exists!`);
+    }
+
+    // Insert participants based on playerIds
+    const participants = [];
+    for (const playerId of playerIds) {
+      const participantData = {
+        hostId: req.session._id,
+        teamId,
+        teamName,
+        tournamentId,
+        eventId,
+        playerId,
+        created_at: getCurrentUnix(),
+        updated_at: getCurrentUnix(),
+      };
+      participants.push(participantData);
+    }
+    await ParticipantModel.insertMany(participants);
+
+    return res.status(StatusCodes.OK).send(
+      responseGenerators({}, StatusCodes.OK, 'Participants added successfully', 0)
+    );
+  } catch (error) {
+    if (error instanceof ValidationError || error instanceof CustomError) {
+      return res.status(StatusCodes.BAD_REQUEST).send(
+        responseGenerators({}, StatusCodes.BAD_REQUEST, error.message, 1)
+      );
+    }
+    console.error(error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(
+      responseGenerators({}, StatusCodes.INTERNAL_SERVER_ERROR, 'Internal Server Error', 1)
+    );
+  }
+};
+
+
+// API to select participants based on email or phone number and return playerId and player name
+export const selectParticipantsHandler = async (req, res) => {
+  try {
+    const { email, phoneNumber } = req.body;
+
+    let player;
+    if (email) {
+      player = await PlayerModel.findOne({ email });
+    } else if (phoneNumber) {
+      player = await PlayerModel.findOne({ phone: phoneNumber });
+    }
+
+    if (!player) {
+      throw new CustomError(`Player not found with provided email or phone number`);
+    }
+
+    const participants = await ParticipantModel.aggregate([
+      {
+        $match: { playerId: player._id }
+      },
+      {
+        $project: {
+          _id: 1, // Include participant ID
+          playerId: "$playerId", // Include playerId
+          playerName: getPlayerName("$playerId") // Get player name using a function
+        }
+      }
+    ]);
+
+    return res.status(StatusCodes.OK).send(
+      responseGenerators(participants, StatusCodes.OK, 'Participants found successfully', 0)
+    );
+  } catch (error) {
+    if (error instanceof ValidationError || error instanceof CustomError) {
+      return res.status(StatusCodes.BAD_REQUEST).send(
+        responseGenerators({}, StatusCodes.BAD_REQUEST, error.message, 1)
+      );
+    }
+    console.error(error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(
+      responseGenerators({}, StatusCodes.INTERNAL_SERVER_ERROR, 'Internal Server Error', 1)
+    );
+  }
+};
+
+// Function to get player name based on player ID
+const getPlayerName = async (playerId) => {
+  try {
+    const player = await PlayerModel.findById(playerId);
+    if (!player) {
+      return "Unknown"; // You can handle this as per your requirement
+    }
+    return `${player.fname} ${player.lname}`.trim();
+  } catch (error) {
+    console.error("Error retrieving player name:", error);
+    return "Unknown"; // Handle error case
+  }
+};
+
+
+
+
+/*export const addParticipantHandler = async (req, res) => {
   try {
     // validation
     await addParticipantValidation.validateAsync(req.body);
@@ -89,4 +231,4 @@ export const addParticipantHandler = async (req, res) => {
       responseGenerators({}, StatusCodes.INTERNAL_SERVER_ERROR, 'Internal Server Error', 1)
     );
   }
-};
+};*/
