@@ -57,37 +57,95 @@ export const updateMatchHandler = async (req, res) => {
 export const scoreUpdateMatchHandler = async (req, res) => {
   try {
     // check Validation
-    await scoreUpdateMatchValidation.validateAsync(req.body);
+    await scoreUpdateMatchValidation.validateAsync({
+      ...req.body,
+      ...req.params,
+    });
 
     // check Match exist
-
-    // winner
-    // tie
-
-    // find and update score
-    let updatedData = await BadmintonMatchModel.findOneAndUpdate(
-      {
-        _id: req.body.id,
-        isDeleted: false,
-        tournamentId: req.body.tournamentId,
-        eventId: req.body.eventId,
-        "score.type.0.teamId": req.body.score.type[0].teamId,
-        "score.type.1.teamId": req.body.score.type[1].teamId,
-      },
-      {
-        score: req.body.score,
-        updated_at: getCurrentUnix(),
-        updated_by: req.session.hostId,
-      },
-      { new: true }
-    );
+    let matchData = await BadmintonMatchModel.findOne({
+      _id: req.params.id,
+      isDeleted: false,
+      tournamentId: req.body.tournamentId,
+      eventId: req.body.eventId,
+    });
 
     // if the Match is not exist
-    if (!updatedData) throw new CustomError(`Match does not exist`);
+    if (!matchData) throw new CustomError(`Match does not exist.`);
+
+    // check match is in progress
+    if (matchData.status !== "IN_PROGRESS")
+      throw new CustomError(
+        `The match hasn't started yet or it's already over.`
+      );
+
+    // update score
+    let updatedScore = [];
+    for (const iterator of req.body.score) {
+      let isTeamExist = matchData.score.filter(
+        (ele) => ele.teamId === iterator.teamId
+      );
+      if (!isTeamExist)
+        throw new CustomError("These players don't belong to this match.");
+      updatedScore.push({
+        teamId: isTeamExist[0].teamId,
+        score: isTeamExist[0].score + iterator.score,
+      });
+    }
+
+    matchData.score = updatedScore;
+    matchData.updated_by = req.session._id;
+    matchData.updated_at = getCurrentUnix();
+    await matchData.save();
+
+    // condition for winning
+    // if the score is greter than max Point
+    if (
+      matchData.score[0].score >= matchData.maxPoints ||
+      matchData.score[1].score >= matchData.maxPoints
+    ) {
+      // normal condition winning
+      // One score is greater than or equal to the maximum point, and the other is two scores less.
+      if (Math.abs(matchData.score[0].score - matchData.score[1].score) >= 2) {
+        return res
+          .status(StatusCodes.OK)
+          .send(
+            responseGenerators(
+              { matchCompleted: true },
+              StatusCodes.OK,
+              "Match completed successfully",
+              0
+            )
+          );
+      }
+      // here we apply the super point concept
+      else if (
+        matchData.score[0].score === 30 ||
+        matchData.score[1].score === 30
+      ) {
+        return res
+          .status(StatusCodes.OK)
+          .send(
+            responseGenerators(
+              { matchCompleted: true },
+              StatusCodes.OK,
+              "Match completed successfully",
+              0
+            )
+          );
+      }
+    }
 
     return res
       .status(StatusCodes.OK)
-      .send(responseGenerators(updatedData, StatusCodes.OK, "SUCCESS", 0));
+      .send(
+        responseGenerators(
+          { ...matchData, matchCompleted: false },
+          StatusCodes.OK,
+          "Score Updated successfully",
+          0
+        )
+      );
   } catch (error) {
     if (error instanceof ValidationError || error instanceof CustomError) {
       return res.status(StatusCodes.BAD_REQUEST).json({
@@ -176,11 +234,14 @@ export const startMatchHandler = async (req, res) => {
     await startMatchValidation.validateAsync(req.body);
 
     // check match id
-    const matchData = await BadmintonMatchModel.findOne({
+    let matchData = await BadmintonMatchModel.findOne({
       _id: req.body.matchId,
       hostId: req.session._id,
       isDeleted: false,
     });
+
+    // check match exist or not
+    if (!matchData) throw new CustomError("The match doesn't exist.");
 
     // check match status
     if (matchData.status !== "PENDING") {
@@ -235,6 +296,7 @@ export const startMatchHandler = async (req, res) => {
     (matchData.updated_by = req.session._id),
       (matchData.updated_at = getCurrentUnix());
 
+    await matchData.save();
     // Send the response
     return res
       .status(StatusCodes.OK)
