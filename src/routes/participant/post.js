@@ -8,8 +8,10 @@ import PlayerModel from "../../models/player";
 import { addParticipantValidation } from "../../helpers/validations/participant.validation";
 import {
   checkIsDateAfter,
+  generatePublicId,
   getCurrentUnix,
 } from "../../commons/common-functions";
+import EventModel from "../../models/events";
 
 // Add Participant to Tournament API with check for registration status and player existence
 export const addParticipantsToEventHandler = async (req, res) => {
@@ -38,12 +40,12 @@ export const addParticipantsToEventHandler = async (req, res) => {
     // Check event type and validate playerIds
     let teamId = generatePublicId();
     switch (event.type) {
-      case "solo":
+      case "SOLO":
         if (playerIds.length !== 1) {
           throw new CustomError(`For solo event, playerIds array should contain exactly 1 player`);
         }
         break;
-      case "duo":
+      case "DUO":
         if (playerIds.length !== 2) {
           throw new CustomError(`For duo event, playerIds array should contain exactly 2 players`);
         }

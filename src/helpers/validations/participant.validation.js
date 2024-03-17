@@ -6,5 +6,5 @@ export const addParticipantValidation = Joi.object({
     eventId: Joi.string().required(),
     teamName:Joi.string().required(),
     tournamentId: Joi.string().required(),
-    playerId: Joi.string().required(),
+    playerIds: Joi.array().items(Joi.string()).required(),
   });

@@ -15,6 +15,7 @@ const ParticipantSchema = new mongoose.Schema({
     type: String,
     required: true,
     enum: ["PENDING", "FAILED", "COMPLETED"],
+    default:"PENDING"
   },
   created_by: { type: String },
   updated_by: { type: String },
