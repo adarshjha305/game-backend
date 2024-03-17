@@ -108,18 +108,7 @@ export const selectParticipantsHandler = async (req, res) => {
       throw new CustomError(`Player not found with provided email or phone number`);
     }
 
-    const participants = await ParticipantModel.aggregate([
-      {
-        $match: { playerId: player._id }
-      },
-      {
-        $project: {
-          _id: 1, // Include participant ID
-          playerId: "$playerId", // Include playerId
-          playerName: getPlayerName("$playerId") // Get player name using a function
-        }
-      }
-    ]);
+    const participants = [{ playerId: player._id, playerName: player.name }];
 
     return res.status(StatusCodes.OK).send(
       responseGenerators(participants, StatusCodes.OK, 'Participants found successfully', 0)
@@ -136,22 +125,6 @@ export const selectParticipantsHandler = async (req, res) => {
     );
   }
 };
-
-// Function to get player name based on player ID
-const getPlayerName = async (playerId) => {
-  try {
-    const player = await PlayerModel.findById(playerId);
-    if (!player) {
-      return "Unknown"; // You can handle this as per your requirement
-    }
-    return `${player.fname} ${player.lname}`.trim();
-  } catch (error) {
-    console.error("Error retrieving player name:", error);
-    return "Unknown"; // Handle error case
-  }
-};
-
-
 
 
 /*export const addParticipantHandler = async (req, res) => {
