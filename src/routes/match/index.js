@@ -1,6 +1,6 @@
 import express from "express";
 import { authenticateHost } from "../../middleware/hostAuthentication";
-import { listMatchesHandler } from "./get";
+import { getLiveScoreListHandler, listMatchesHandler } from "./get";
 import {
   getLiveScoreHandler,
   scoreUpdateMatchHandler,
@@ -25,6 +25,13 @@ badmintonMatchRouter.post("/live-score", authenticateHost, getLiveScoreHandler);
 
 // List Matches
 badmintonMatchRouter.get("/list/:id", authenticateHost, listMatchesHandler);
+
+// get live score
+badmintonMatchRouter.get(
+  "/get-live-score/:id",
+  authenticateHost,
+  getLiveScoreListHandler
+);
 
 // start Matches
 badmintonMatchRouter.post("/start-match", authenticateHost, startMatchHandler);

@@ -64,7 +64,6 @@ export const listParticipantHandler = async (req, res) => {
   }
 };
 
-
 // export const listParticipantHandler = async (req, res) => {
 //   try {
 //     const tournamentId = req.params.id;

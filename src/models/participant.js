@@ -6,6 +6,7 @@ const ParticipantSchema = new mongoose.Schema({
   hostId: { type: String, required: true },
   tournamentId: { type: String, required: true },
   eventId: { type: String, required: true },
+  teamName: { type: String, required: true },
   playerId: { type: String, required: true },
   teamId: { type: String, required: true },
   paymentStatus: {
@@ -19,7 +20,7 @@ const ParticipantSchema = new mongoose.Schema({
   updated_at: { type: String },
   isDeleted: { type: Boolean, default: false },
 });
- 
+
 const ParticipantModel = mongoose.model("participant", ParticipantSchema);
 
 export default ParticipantModel;
