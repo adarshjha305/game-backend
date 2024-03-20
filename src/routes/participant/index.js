@@ -1,6 +1,5 @@
 import { Router } from "express";
 import {
-  addParticipantHandler,
   addParticipantsToEventHandler,
   selectParticipantsHandler,
 } from "./post";

@@ -79,10 +79,19 @@ export const scoreUpdateMatchHandler = async (req, res) => {
         `The match hasn't started yet or it's already over.`
       );
 
+    let setNumber = req.body.totalScore.setNumber - 1;
+
+    if (setNumber > 0) {
+      if (matchData.totalScore.length <= setNumber - 1)
+        throw new CustomError(`Set is not exits.`);
+      if (!matchData.totalScore[setNumber - 1].isCompleted)
+        throw new CustomError(`Previous Set is not completed.`);
+    }
+
     // update score
     let updatedScore = [];
-    for (const iterator of req.body.score) {
-      let isTeamExist = matchData.score.filter(
+    for (const iterator of req.body.totalScore.setScore) {
+      let isTeamExist = matchData.totalScore[setNumber].setScore.filter(
         (ele) => ele.teamId === iterator.teamId
       );
       if (!isTeamExist)
@@ -93,25 +102,48 @@ export const scoreUpdateMatchHandler = async (req, res) => {
       });
     }
 
-    matchData.score = updatedScore;
+    matchData.totalScore[setNumber].setScore = updatedScore;
     matchData.updated_by = req.session._id;
     matchData.updated_at = getCurrentUnix();
-    await matchData.save();
+
+    // await matchData.save();
 
     // condition for winning
     // if the score is greter than max Point
     if (
-      matchData.score[0].score >= matchData.maxPoints ||
-      matchData.score[1].score >= matchData.maxPoints
+      matchData.totalScore[setNumber].setScore[0].score >=
+        matchData.maxPoints ||
+      matchData.totalScore[setNumber].setScore[1].score >= matchData.maxPoints
     ) {
-      // normal condition winning
+      // checking normal condition of winning
       // One score is greater than or equal to the maximum point, and the other is two scores less.
-      if (Math.abs(matchData.score[0].score - matchData.score[1].score) >= 2) {
+      if (
+        Math.abs(
+          matchData.totalScore[setNumber].setScore[0].score -
+            matchData.totalScore[setNumber].setScore[1].score
+        ) >= 2
+      ) {
+        // update the set as completed
+        matchData.totalScore[setNumber].isCompleted = true;
+        await matchData.save();
+
+        if (setNumber + 1 === matchData.numOfSets)
+          return res
+            .status(StatusCodes.OK)
+            .send(
+              responseGenerators(
+                { setCompleted: true, matchCompleted: true },
+                StatusCodes.OK,
+                "Match completed successfully",
+                0
+              )
+            );
+
         return res
           .status(StatusCodes.OK)
           .send(
             responseGenerators(
-              { matchCompleted: true },
+              { setCompleted: true, matchCompleted: false },
               StatusCodes.OK,
               "Match completed successfully",
               0
@@ -120,14 +152,31 @@ export const scoreUpdateMatchHandler = async (req, res) => {
       }
       // here we apply the super point concept
       else if (
-        matchData.score[0].score === 30 ||
-        matchData.score[1].score === 30
+        matchData.totalScore[setNumber].setScore[0].score === 30 ||
+        matchData.totalScore[setNumber].setScore[1].score === 30
       ) {
+        // update the set as completed
+        matchData.totalScore[setNumber].isCompleted = true;
+
+        await matchData.save();
+
+        if (setNumber + 1 === matchData.numOfSets)
+          return res
+            .status(StatusCodes.OK)
+            .send(
+              responseGenerators(
+                { setCompleted: true, matchCompleted: true },
+                StatusCodes.OK,
+                "Match completed successfully",
+                0
+              )
+            );
+
         return res
           .status(StatusCodes.OK)
           .send(
             responseGenerators(
-              { matchCompleted: true },
+              { setCompleted: true, matchCompleted: false },
               StatusCodes.OK,
               "Match completed successfully",
               0
@@ -135,12 +184,13 @@ export const scoreUpdateMatchHandler = async (req, res) => {
           );
       }
     }
+    await matchData.save();
 
     return res
       .status(StatusCodes.OK)
       .send(
         responseGenerators(
-          { ...matchData.toJSON(), matchCompleted: false },
+          { ...matchData.toJSON(), matchCompleted: false, setCompleted: true },
           StatusCodes.OK,
           "Score Updated successfully",
           0
