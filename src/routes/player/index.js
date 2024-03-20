@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { privateKeyMiddleware } from "../../middleware/privateKeyCheck";
 import { createPlayerHandler, otpVerificationHandler, toggleBlockUnblockHandler, updatePlayerHandler } from "./post";
-import { deletePlayer, listPlayerHandler } from "./get";
+import { deletePlayer, getSinglePlayerDetailsHandler, listPlayerHandler } from "./get";
 
 
 
@@ -12,6 +12,9 @@ playerRouter.post(`/create`, privateKeyMiddleware, createPlayerHandler);
 
 // OTP Verification
 playerRouter.post(`/otp-verification`, privateKeyMiddleware, otpVerificationHandler);
+
+// Get Single Player
+playerRouter.get(`/single-player/:id`, privateKeyMiddleware, getSinglePlayerDetailsHandler);
 
 // List Players
 playerRouter.get(`/list`, privateKeyMiddleware, listPlayerHandler);

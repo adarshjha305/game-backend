@@ -64,60 +64,93 @@ export const listParticipantHandler = async (req, res) => {
   }
 };
 
-// export const listParticipantHandler = async (req, res) => {
-//   try {
-//     const tournamentId = req.params.id;
+// Select participants based on event ID and return Team Name and participant ID
+export const selectParticipantsByEventIdHandler = async (req, res) => {
+  try {
+    const eventId = req.params.id;
 
-//     if (!tournamentId) {
-//       throw new CustomError("Tournament ID is required");
-//     }
+    const participants = await ParticipantModel.aggregate([
+      {
+        $match: { eventId }, // Filter participants based on the event ID
+      },
+      {
+        $project: {
+          _id: 1, // Include participant ID
+          teamName: 1, // Include teamName
+          playerId: 1, // Include playerId
+        },
+      },
+    ]);
 
-//     const where = {
-//       tournamentId,
-//       isDeleted: false,
-//       paymentStatus: "COMPLETED",
-//     };
+    // Check if participants exist
+    if (!participants || participants.length === 0) {
+      throw new CustomError(`No participants found for the given event ID`);
+    }
 
-//     const pagination = setPagination(where);
+    return res
+      .status(StatusCodes.OK)
+      .send(
+        responseGenerators(
+          participants,
+          StatusCodes.OK,
+          "Participants found successfully",
+          0
+        )
+      );
+  } catch (error) {
+    if (error instanceof ValidationError || error instanceof CustomError) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .send(
+          responseGenerators({}, StatusCodes.BAD_REQUEST, error.message, 1)
+        );
+    }
+    console.error(error);
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .send(
+        responseGenerators(
+          {},
+          StatusCodes.INTERNAL_SERVER_ERROR,
+          "Internal Server Error",
+          1
+        )
+      );
+  }
+};
 
-//     const participants = await ParticipantModel.find(where)
-//       .sort(pagination.sort)
-//       .skip(pagination.offset)
-//       .limit(pagination.limit)
-//       .lean()
-//       .exec();
+// API to Toggle isOpen in Participant Model
+export const toggleParticipantIsOpenHandler = async (req, res) => {
+  try {
+    const participantId = req.params._id;
 
-//     const totalCount = await ParticipantModel.countDocuments(where);
+    // Find the participant by ID
+    const participant = await ParticipantModel.findById(participantId);
+    if (!participant) {
+      throw new CustomError(`Participant not found with the provided ID`);
+    }
+    participant.isOpen = true;
 
-//     return res.status(StatusCodes.OK).send(
-//       responseGenerators(
-//         {
-//           paginatedData: participants,
-//           totalCount,
-//           itemsPerPage: pagination.limit,
-//         },
-//         StatusCodes.OK,
-//         "SUCCESS",
-//         0
-//       )
-//     );
-//   } catch (error) {
-//     if (error instanceof ValidationError || error instanceof CustomError) {
-//       return res
-//         .status(StatusCodes.BAD_REQUEST)
-//         .send(
-//           responseGenerators({}, StatusCodes.BAD_REQUEST, error.message, 1)
-//         );
-//     }
-//     return res
-//       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-//       .send(
-//         responseGenerators(
-//           {},
-//           StatusCodes.INTERNAL_SERVER_ERROR,
-//           "Internal Server Error",
-//           1
-//         )
-//       );
-//   }
-// };
+    await participant.save();
+
+    return res.status(StatusCodes.OK).send({
+      data: participant,
+      message: "Participant isOpen field toggled to true successfully",
+      errorCode: 0,
+    });
+  } catch (error) {
+    if (error instanceof CustomError) {
+      return res.status(StatusCodes.BAD_REQUEST).send({
+        data: {},
+        message: error.message,
+        errorCode: 1,
+      });
+    }
+    console.error(error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+      data: {},
+      message: "Internal Server Error",
+      errorCode: 1,
+    });
+  }
+};
