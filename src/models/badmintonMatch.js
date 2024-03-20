@@ -19,11 +19,20 @@ const badmintonMatchSchema = new mongoose.Schema({
     enum: ["PENDING", "IN_PROGRESS", "COMPLETED"],
     default: "PENDING",
   },
-  score: {
+  totalScore: {
     type: [
       {
-        teamId: { type: String },
-        score: { type: Number, required: true, default: 0 },
+        setScore: {
+          type: [
+            {
+              teamId: { type: String },
+              score: { type: Number, required: true, default: 0 },
+            },
+          ],
+        },
+        setNumber: { type: Number, required: true },
+        isCompleted: { type: Boolean, required: true, default: false },
+        winner: { type: String },
       },
     ],
     required: true,
