@@ -346,6 +346,19 @@ export const AddBadmintonMatchWithParticipants = async (
         .filter((ele) => ele.name == dp1 || ele.name == dp2)
         .map((ele) => ele._id);
     }
+
+    let totalScore = [];
+    for (let index = 0; index < eventData.numOfSets; index++) {
+      totalScore.push({
+        setScore: [
+          { teamId: singleMatch.player1, score: 0 },
+          { teamId: singleMatch.player2, score: 0 },
+        ],
+        setNumber: index + 1,
+        isCompleted: false,
+      });
+    }
+
     finalMatchArrayFromInsertion.push({
       _id: generatePublicId(),
       name: singleMatch.matchId,
@@ -359,16 +372,7 @@ export const AddBadmintonMatchWithParticipants = async (
       numOfSets: eventData.numOfSets,
       maxPoints: eventData.maxPoints,
       status: "PENDING",
-      score: [
-        {
-          teamId: singleMatch.player1,
-          score: 0,
-        },
-        {
-          teamId: singleMatch.player2,
-          score: 0,
-        },
-      ],
+      totalScore: totalScore,
       matchType: eventData.type,
       venueId: eventData.venueId[0],
       gameType: eventData.gameType,
